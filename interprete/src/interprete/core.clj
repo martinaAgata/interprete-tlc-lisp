@@ -368,6 +368,10 @@
 		        (do (pr (first lis)) (print " ") (imprimir (next lis) orig)))))
 
 
+; FUNCIONES AUXILIARES DE LA BIBLIOTECA DE CLOJURE
+
+(use '[clojure.string :only (lower-case)])
+
 ; FUNCIONES QUE DEBEN SER IMPLEMENTADAS PARA COMPLETAR EL INTERPRETE DE TLC-LISP (ADEMAS DE COMPLETAR 'EVALUAR' Y 'APLICAR-FUNCION-PRIMITIVA'):
 
 ; user=> (controlar-aridad '(a b c) 3)
@@ -389,53 +393,68 @@
 )
 
 
-; ; user=> (igual? 1 1)
-; ; true
-; ; user=> (igual? 1 2)
-; ; false
-; ; user=> (igual? 'a 'a)
-; ; true
-; ; user=> (igual? 'A 'A)
-; ; true
-; ; user=> (igual? 'a 'A)
-; ; true
-; ; user=> (igual? 'A 'a)
-; ; true
-; ; user=> (igual? 'a 'b)
-; ; false
-; ; user=> (igual? '(a b c) '(A B C))
-; ; true
-; ; user=> (igual? '(a b c) '(A B D))
-; ; false
-; ; user=> (igual? nil nil)
-; ; true
-; ; user=> (igual? nil 'NIL)
-; ; true
-; ; user=> (igual? 'NIL nil)
-; ; true
-; ; user=> (igual? 'NIL 'NIL)
-; ; true
-; ; user=> (igual? nil ())
-; ; true
-; ; user=> (igual? 'NIL ())
-; ; true
-; ; user=> (igual? () ())
-; ; true
-; ; user=> (igual? () '(nil))
-; ; false
-; ; user=> (igual? "a" "a")
-; ; true
-; ; user=> (igual? "a" "A")
-; ; false
-; ; user=> (igual? 'a "a")
-; ; false
-; ; user=> (igual? 'a "A")
-; ; false
-; (defn igual?
-;   "Verifica la igualdad entre dos elementos al estilo de TLC-LISP (case-insensitive)."
-; )
-;
-;
+; user=> (igual? 1 1)
+; true
+; user=> (igual? 1 2)
+; false
+; user=> (igual? 'a 'a)
+; true
+; user=> (igual? 'A 'A)
+; true
+; user=> (igual? 'a 'A)
+; true
+; user=> (igual? 'A 'a)
+; true
+; user=> (igual? 'a 'b)
+; false
+; user=> (igual? '(a b c) '(A B C))
+; true
+; user=> (igual? '(a b c) '(A B D))
+; false
+; user=> (igual? nil nil)
+; true
+; user=> (igual? nil 'NIL)
+; true
+; user=> (igual? 'NIL nil)
+; true
+; user=> (igual? 'NIL 'NIL)
+; true
+; user=> (igual? nil ())
+; true
+; user=> (igual? 'NIL ())
+; true
+; user=> (igual? () ())
+; true
+; user=> (igual? () '(nil))
+; false
+; user=> (igual? "a" "a")
+; true
+; user=> (igual? "a" "A")
+; false
+; user=> (igual? 'a "a")
+; false
+; user=> (igual? 'a "A")
+; false
+(defn lowercase_si
+    "Función auxiliar que retorna null si el elemento es 'NIL o (), al elemento convertido
+    a lowercase si es un símbolo o lista o, en caso contrario, al elemento tal como se lo recibió."
+    ([a]
+        (cond
+            (or (= 'NIL a) (= () a)) nil
+            (or (symbol? a) (list? a)) (lower-case a)
+            :else a
+        )
+    )
+)
+
+(defn igual?
+    "Verifica la igualdad entre dos elementos al estilo de TLC-LISP (case-insensitive)."
+    ([simbolo-a simbolo-b]
+        (= (lowercase_si simbolo-a) (lowercase_si simbolo-b))
+    )
+)
+
+
 ; ; user=> (error? '(*error* too-few-args))
 ; ; true
 ; ; user=> (error? (list '*error* 'too-few-args))
