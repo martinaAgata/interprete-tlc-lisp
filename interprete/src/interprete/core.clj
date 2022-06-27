@@ -370,18 +370,25 @@
 
 ; FUNCIONES QUE DEBEN SER IMPLEMENTADAS PARA COMPLETAR EL INTERPRETE DE TLC-LISP (ADEMAS DE COMPLETAR 'EVALUAR' Y 'APLICAR-FUNCION-PRIMITIVA'):
 
-; ; user=> (controlar-aridad '(a b c) 3)
-; ; 3
-; ; user=> (controlar-aridad '(a b c) 2)
-; ; (*error* too-many-args)
-; ; user=> (controlar-aridad '(a b c) 4)
-; ; (*error* too-few-args)
-; (defn controlar-aridad
-;   "Si la longitud de una lista dada es la esperada, devuelve esa longitud.
-;    Si no, devuelve una lista con un mensaje de error (una lista con *error* como primer elemento)."
-; )
-;
-;
+; user=> (controlar-aridad '(a b c) 3)
+; 3
+; user=> (controlar-aridad '(a b c) 2)
+; (*error* too-many-args)
+; user=> (controlar-aridad '(a b c) 4)
+; (*error* too-few-args)
+(defn controlar-aridad
+  "Si la longitud de una lista dada es la esperada, devuelve esa longitud.
+   Si no, devuelve una lista con un mensaje de error (una lista con *error* como primer elemento)."
+   ([lista longitud]
+        (cond
+            (= (count lista) longitud) longitud
+            (> (count lista) longitud) (list '*error* 'too-many-args)
+            (< (count lista) longitud) (list '*error* 'too-few-args)
+        )
+    )
+)
+
+
 ; ; user=> (igual? 1 1)
 ; ; true
 ; ; user=> (igual? 1 2)
