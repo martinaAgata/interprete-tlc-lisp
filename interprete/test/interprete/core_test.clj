@@ -3,6 +3,7 @@
             [interprete.core :refer :all]))
 
 ; tests de controlar-aridad
+
 (deftest controlar-aridad-success
   (testing "controlar-aridad devuelve longitud esperada"
     (is (= 3 (controlar-aridad '(a b c) 3)))
@@ -22,6 +23,7 @@
 )
 
 ; tests de igual?
+
 (deftest igual?-equal-numbers
   (testing "igual? devuelve true comparando dígitos iguales"
     (is (= true (igual? 1 1)))
@@ -165,5 +167,37 @@
 (deftest error?-nil
   (testing "error? devuelve false al recibir nil"
     (is (= false (error? ())))
+  )
+)
+
+; tests de revisar-fnc
+
+(deftest revisar-fnc-returns-error-list
+  (testing "revisar-fnc devuelve el listado con mensaje de error recibido"
+    (is (= (list '*error* 'too-few-args) (revisar-fnc '(*error* too-few-args))))
+  )
+)
+
+(deftest revisar-fnc-returns-nil-when-list-is-not-an-error-list
+  (testing "revisar-fnc devuelve nil al recibir un listado que no es un mensaje de error"
+    (is (= nil (revisar-fnc '(too-few-args))))
+  )
+)
+
+(deftest revisar-fnc-returns-nil-when-parameter-is-not-a-list
+  (testing "revisar-fnc devuelve nil al no recibir una lista como parámetro"
+    (is (= nil (revisar-fnc '*error*)))
+  )
+)
+
+(deftest revisar-fnc-returns-nil-when-receiving-nil
+  (testing "revisar-fnc devuelve nil al recibir nil"
+    (is (= nil (revisar-fnc nil)))
+  )
+)
+
+(deftest revisar-fnc-returns-nil-when-receiving-an-empty-list
+  (testing "revisar-fnc devuelve nil al recibir una lista vacía"
+    (is (= nil (revisar-fnc ())))
   )
 )

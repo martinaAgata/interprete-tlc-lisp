@@ -474,33 +474,39 @@
 ; user=> (error? nil)
 ; false
 (defn error?
-  "Devuelve true o false, segun sea o no el arg. un mensaje de error (una lista con *error* como primer elemento)."
-  ([listado_error]
+    "Devuelve true o false, segun sea o no el arg. un mensaje de error (una lista con *error* como primer elemento)."
+    ([listado_error]
         (cond
             (not (list? listado_error)) false
             (or (or (= listado_error nil) (= listado_error ())) (= (count listado_error) 0)) false
-            (= (str "*error*") (lower-case (first listado_error))) true
+            (igual? (str "*error*") (first listado_error)) true
             :else false
         )
-  )
+    )
 )
 
 
-; ; user=> (revisar-fnc '(*error* too-few-args))
-; ; (*error* too-few-args)
-; ; user=> (revisar-fnc '(too-few-args))
-; ; nil
-; ; user=> (revisar-fnc '*error*)
-; ; nil
-; ; user=> (revisar-fnc nil)
-; ; nil
-; ; user=> (revisar-fnc ())
-; ; nil
-; (defn revisar-fnc
-;   "Si la lista es un mensaje de error, lo devuelve; si no, devuelve nil."
-; )
-;
-;
+; user=> (revisar-fnc '(*error* too-few-args))
+; (*error* too-few-args)
+; user=> (revisar-fnc '(too-few-args))
+; nil
+; user=> (revisar-fnc '*error*)
+; nil
+; user=> (revisar-fnc nil)
+; nil
+; user=> (revisar-fnc ())
+; nil
+(defn revisar-fnc
+    "Si la lista es un mensaje de error, lo devuelve; si no, devuelve nil."
+    ([lista]
+        (cond
+            (error? lista) lista
+            :else nil
+        )
+    )
+)
+
+
 ; ; user=> (revisar-lae '(1 2 3))
 ; ; nil
 ; ; user=> (revisar-lae nil)
