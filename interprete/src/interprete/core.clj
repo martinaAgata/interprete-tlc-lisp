@@ -455,29 +455,37 @@
 )
 
 
-; ; user=> (error? '(*error* too-few-args))
-; ; true
-; ; user=> (error? (list '*error* 'too-few-args))
-; ; true
-; ; user=> (error? (list '*ERROR* 'too-few-args))
-; ; true
-; ; user=> (error? (list '*Error* 'too-few-args))
-; ; true
-; ; user=> (error? (list '*error*))
-; ; true
-; ; user=> (error? (list 'too-few-args))
-; ; false
-; ; user=> (error? '*error*)
-; ; false
-; ; user=> (error? ())
-; ; false
-; ; user=> (error? nil)
-; ; false
-; (defn error?
-;   "Devuelve true o false, segun sea o no el arg. un mensaje de error (una lista con *error* como primer elemento)."
-; )
-;
-;
+; user=> (error? '(*error* too-few-args))
+; true
+; user=> (error? (list '*error* 'too-few-args))
+; true
+; user=> (error? (list '*ERROR* 'too-few-args))
+; true
+; user=> (error? (list '*Error* 'too-few-args))
+; true
+; user=> (error? (list '*error*))
+; true
+; user=> (error? (list 'too-few-args))
+; false
+; user=> (error? '*error*)
+; false
+; user=> (error? ())
+; false
+; user=> (error? nil)
+; false
+(defn error?
+  "Devuelve true o false, segun sea o no el arg. un mensaje de error (una lista con *error* como primer elemento)."
+  ([listado_error]
+        (cond
+            (not (list? listado_error)) false
+            (or (or (= listado_error nil) (= listado_error ())) (= (count listado_error) 0)) false
+            (= (str "*error*") (lower-case (first listado_error))) true
+            :else false
+        )
+  )
+)
+
+
 ; ; user=> (revisar-fnc '(*error* too-few-args))
 ; ; (*error* too-few-args)
 ; ; user=> (revisar-fnc '(too-few-args))
