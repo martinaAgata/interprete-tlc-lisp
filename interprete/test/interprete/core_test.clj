@@ -259,3 +259,17 @@
     (is (= '(b 7) (actualizar-amb () 'b 7)))
   )
 )
+
+; tests de buscar
+
+(deftest buscar-existent-key-returns-value
+  (testing "buscar una clave existente devuelve un valor asociado"
+    (is (= 3 (buscar 'c '(a 1 b 2 c 3 d 4 e 5))))
+  )
+)
+
+(deftest buscar-non-existent-key-returns-value
+  (testing "buscar una clave inexistente devuelve error unbound-symbol"
+    (is (= (list '*error* 'unbound-symbol 'f) (buscar 'f '(a 1 b 2 c 3 d 4 e 5))))
+  )
+)
