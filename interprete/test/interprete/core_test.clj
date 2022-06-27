@@ -10,13 +10,13 @@
 )
 
 (deftest controlar-aridad-too-many-arguments
-  (testing "controlar-aridad recibió demasiados argumentos"
+  (testing "controlar-aridad devuelve error al recibir demasiados argumentos"
     (is (= '(*error* too-many-args) (controlar-aridad '(a b c) 2)))
   )
 )
 
 (deftest controlar-aridad-many-arguments
-  (testing "controlar-aridad recibió insuficientes argumentos"
+  (testing "controlar-aridad devuelve error al recibir insuficientes argumentos"
     (is (= '(*error* too-few-args) (controlar-aridad '(a b c) 4)))
   )
 )
@@ -109,5 +109,61 @@
 (deftest igual?-different-chars
   (testing "igual? devuelve false comparando strings distintos"
     (is (= false (igual? "a" "b")))
+  )
+)
+
+; tests de error?
+
+(deftest error?-first-element-is-error
+  (testing "error? devuelve true al recibir una lista con primer elemento \"*error*\""
+    (is (= true (error? '(*error* too-few-args))))
+  )
+)
+
+(deftest error?-first-element-of-2-values-list-is-error
+  (testing "error? devuelve true al recibir una lista con varios elementos donde el primero es \"*error*\""
+    (is (= true (error? '(*error* too-many-args))))
+  )
+)
+
+(deftest error?-first-element-of-2-values-list-is-error-in-uppercase
+  (testing "error? devuelve true al recibir una lista cuya primera palabra es \"ERROR\""
+    (is (= true (error? '(*ERROR* too-few-args))))
+  )
+)
+
+(deftest error?-first-element-of-2-values-list-is-error-with-first-letter-on-uppercase
+  (testing "error? devuelve true al recibir una lista cuya primera palabra es \"Error\""
+    (is (= true (error? '(*Error* too-few-args))))
+  )
+)
+
+(deftest error?-list-only-element-is-error
+  (testing "error? devuelve true al recibir una lista con un único elemento \"*error*\""
+    (is (= true (error? '(*error*))))
+  )
+)
+
+(deftest error?-list-only-element-is-not-error
+  (testing "error? devuelve false al recibir una lista con un único elemento distinto de \"*error*\" (o alguna de sus variaciones en distinto case)"
+    (is (= false (error? (list 'too-few-args))))
+  )
+)
+
+(deftest error?-error-is-not-inside-a-list
+  (testing "error? devuelve false al no recibir el error dentro de una lista"
+    (is (= false (error? '*error*)))
+  )
+)
+
+(deftest error?-empty-list
+  (testing "error? devuelve false al recibir una lista sin mensaje de error"
+    (is (= false (error? ())))
+  )
+)
+
+(deftest error?-nil
+  (testing "error? devuelve false al recibir nil"
+    (is (= false (error? ())))
   )
 )
