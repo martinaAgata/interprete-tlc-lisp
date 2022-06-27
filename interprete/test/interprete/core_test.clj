@@ -201,3 +201,35 @@
     (is (= nil (revisar-fnc ())))
   )
 )
+
+; tests de revisar-lae
+
+(deftest revisar-lae-returns-nil-when-list-has-no-errors
+  (testing "revisar-lae devuelve nil si el listado no contiene ningún error"
+    (is (= nil (revisar-lae '(1 2 3))))
+  )
+)
+
+(deftest revisar-lae-returns-nil-when-receiving-nil
+  (testing "revisar-lae devuelve nil cuando recibe nil"
+    (is (= nil (revisar-lae nil)))
+  )
+)
+
+(deftest revisar-lae-returns-nil-when-receiving-an-empty-list
+  (testing "revisar-lae devuelve nil cuando recibe una lista vacía"
+    (is (= nil (revisar-lae ())))
+  )
+)
+
+(deftest revisar-lae-returns-error-when-list-has-an-error
+  (testing "revisar-lae devuelve el único error que hay dentro de la lista"
+    (is (= (list '*error* 'too-few-args) (revisar-lae '(1 (*error* too-few-args) 3))))
+  )
+)
+
+(deftest revisar-lae-returns-first-error-when-list-has-many-errors
+  (testing "revisar-lae devuelve el primer error que hay dentro de la lista"
+    (is (= (list '*error* 'too-few-args) (revisar-lae '(1 (*error* too-few-args) (*error* too-many-args) 3))))
+  )
+)
