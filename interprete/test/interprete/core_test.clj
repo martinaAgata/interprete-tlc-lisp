@@ -233,3 +233,29 @@
     (is (= (list '*error* 'too-few-args) (revisar-lae '(1 (*error* too-few-args) (*error* too-many-args) 3))))
   )
 )
+
+; tests de actualizar-amb
+
+(deftest actualizar-amb-loads-new-key-value
+  (testing "actualizar-amb devuelve el ambiente actualizado con el nuevo par clave-valor"
+    (is (= '(a 1 b 2 c 3 d 4) (actualizar-amb '(a 1 b 2 c 3) 'd 4)))
+  )
+)
+
+(deftest actualizar-amb-replaces-preexistent-key-value
+  (testing "actualizar-amb devuelve el ambiente actualizado con el nuevo valor de la clave preexistente"
+    (is (= '(a 1 b 4 c 3) (actualizar-amb '(a 1 b 2 c 3) 'b 4)))
+  )
+)
+
+(deftest actualizar-amb-does-not-modify-the-ambient-when-value-is-error
+  (testing "actualizar-amb devuelve el ambiente sin modificaciones cuando el nuevo valor para una clave preexistente es un error"
+    (is (= '(a 1 b 2 c 3) (actualizar-amb '(a 1 b 2 c 3) 'b (list '*error* 'mal 'hecho))))
+  )
+)
+
+(deftest actualizar-amb-creates-new-ambient-when-receiving-empty-list
+  (testing "actualizar-amb devuelve un ambiente que sólo posee los pares clave-valor que se le hayan indicado"
+    (is (= '(b 7) (actualizar-amb () 'b 7)))
+  )
+)

@@ -528,20 +528,33 @@
 )
 
 
-; ; user=> (actualizar-amb '(a 1 b 2 c 3) 'd 4)
-; ; (a 1 b 2 c 3 d 4)
-; ; user=> (actualizar-amb '(a 1 b 2 c 3) 'b 4)
-; ; (a 1 b 4 c 3)
-; ; user=> (actualizar-amb '(a 1 b 2 c 3) 'b (list '*error* 'mal 'hecho))
-; ; (a 1 b 2 c 3)
-; ; user=> (actualizar-amb () 'b 7)
-; ; (b 7)
-; (defn actualizar-amb
-;   "Devuelve un ambiente actualizado con una clave (nombre de la variable o funcion) y su valor.
-;   Si el valor es un error, el ambiente no se modifica. De lo contrario, se le carga o reemplaza el valor."
-; )
-;
-;
+; user=> (actualizar-amb '(a 1 b 2 c 3) 'd 4)
+; (a 1 b 2 c 3 d 4)
+; user=> (actualizar-amb '(a 1 b 2 c 3) 'b 4)
+; (a 1 b 4 c 3)
+; user=> (actualizar-amb '(a 1 b 2 c 3) 'b (list '*error* 'mal 'hecho))
+; (a 1 b 2 c 3)
+; user=> (actualizar-amb () 'b 7)
+; (b 7)
+(defn reemplazar-en-indice [lista i nuevo_valor]
+    "Devuelve la lista recibida por parámetro con el elemento en el índice i reemplazado por nuevo_valor."
+    (concat (take i lista) (list nuevo_valor) (nthnext lista (inc i)))
+)
+
+(defn actualizar-amb
+    "Devuelve un ambiente actualizado con una clave (nombre de la variable o funcion) y su valor.
+    Si el valor es un error, el ambiente no se modifica. De lo contrario, se le carga o reemplaza el valor."
+    ([ambiente clave nuevo_valor]
+        (cond
+            (and (= (.indexOf ambiente clave) -1) (= (count ambiente) 0)) (list clave nuevo_valor)
+            (= (.indexOf ambiente clave) -1) (concat ambiente (list clave nuevo_valor))
+            (error? nuevo_valor) ambiente
+            :else (reemplazar-en-indice ambiente (inc (.indexOf ambiente clave)) nuevo_valor)
+        )
+    )
+)
+
+
 ; ; user=> (buscar 'c '(a 1 b 2 c 3 d 4 e 5))
 ; ; 3
 ; ; user=> (buscar 'f '(a 1 b 2 c 3 d 4 e 5))
