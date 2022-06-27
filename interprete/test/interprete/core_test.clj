@@ -2,6 +2,15 @@
   (:require [clojure.test :refer :all]
             [interprete.core :refer :all]))
 
-(deftest a-test
-  (testing "FIXME, I fail."
-    (is (= 0 1))))
+; tests de controlar-aridad
+(deftest controlar-aridad-success
+  (testing "controlar-aridad devuelve longitud esperada"
+    (is (= 3 (controlar-aridad '(a b c) 3)))))
+
+(deftest controlar-aridad-too-many-arguments
+  (testing "controlar-aridad recibió demasiados argumentos"
+    (is (= '(*error* too-many-args) (controlar-aridad '(a b c) 2)))))
+
+(deftest controlar-aridad-many-arguments
+  (testing "controlar-aridad recibió insuficientes argumentos"
+    (is (= '(*error* too-few-args) (controlar-aridad '(a b c) 4)))))
