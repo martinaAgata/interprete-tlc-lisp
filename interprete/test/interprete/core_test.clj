@@ -23,97 +23,91 @@
 
 ; tests de igual?
 (deftest igual?-equal-numbers
-  (testing "true = (igual? 1 1)"
+  (testing "igual? devuelve true comparando dígitos iguales"
     (is (= true (igual? 1 1)))
   )
 )
 
 (deftest igual?-different-numbers
-  (testing "false = (igual? 1 2)"
+  (testing "igual? devuelve false comparando dígitos distintos"
     (is (= false (igual? 1 2)))
   )
 )
 
-(deftest igual?-equal-literal-chars-same-case
-  (testing "true = (igual? 'A 'A)"
-    (is (= true (igual? 'A 'A)))
-  )
-)
-
 (deftest igual?-equal-literal-chars-different-case
-  (testing "true = (igual? 'a 'A)"
+  (testing "igual? devuelve true comparando literales de iguales caracteres con distinto case"
     (is (= true (igual? 'a 'A)))
   )
 )
 
 (deftest igual?-different-literal-chars
-  (testing "false = (igual? 'a 'b)"
+  (testing "igual? devuelve false comparando caracteres distintos"
     (is (= false (igual? 'a 'b)))
   )
 )
 
 (deftest igual?-equal-lists-same-case
-  (testing "true = (igual? '(a b c) '(a b c))"
+  (testing "igual? devuelve true comparando listas de caracteres iguales"
     (is (= true (igual? '(a b c) '(a b c))))
   )
 )
 
 (deftest igual?-equal-lists-different-case
-  (testing "true = (igual? '(a b c) '(A B C))"
+  (testing "igual? devuelve true comparando listas de caracteres iguales pero con distinto case"
     (is (= true (igual? '(a b c) '(A B C))))
   )
 )
 
 (deftest igual?-different-lists
-  (testing "false = (igual? '(a b c) '(a b d))"
+  (testing "igual? devuelve false comparando listas de caracteres distintas"
     (is (= false (igual? '(a b c) '(a b d))))
   )
 )
 
 (deftest igual?-nils
-  (testing "true = (igual? nil nil)"
+  (testing "igual? devuelve true comparando nils"
     (is (= true (igual? nil nil)))
   )
 )
 
 (deftest igual?-nil-against-literal-nil
-  (testing "true = (igual? nil 'NIL)"
+  (testing "igual? devuelve true comparando nil contra el literal 'NIL"
     (is (= true (igual? nil 'NIL)))
   )
 )
 
 (deftest igual?-nil-against-empty-list
-  (testing "true = (igual? nil ())"
+  (testing "igual? devuelve true comparando nil contra una lista vacía"
     (is (= true (igual? nil ())))
   )
 )
 
 (deftest igual?-empty-lists
-  (testing "true = (igual? () ())"
+  (testing "igual? devuelve true comparando listas vacías"
     (is (= true (igual? () ())))
   )
 )
 
 (deftest igual?-empty-list-against-nil-list
-  (testing "true = (igual? () '(nil))"
-    (is (= true (igual? () '(nil))))
+  (testing "igual? devuelve false comparando una lista vacía contra una lista cuyo único elemento es nil"
+    (is (= false (igual? () '(nil))))
   )
 )
 
 (deftest igual?-equal-chars
-  (testing "true = (igual? \"a\" \"a\")"
+  (testing "igual? devuelve true comparando strings iguales"
     (is (= true (igual? "a" "a")))
   )
 )
 
 (deftest igual?-different-case-chars
-  (testing "false = (igual? \"a\" \"A\")"
+  (testing "igual? devuelve false comparando strings con distinto case"
     (is (= false (igual? "a" "A")))
   )
 )
 
 (deftest igual?-different-chars
-  (testing "false = (igual? \"a\" \"b\")"
+  (testing "igual? devuelve false comparando strings distintos"
     (is (= false (igual? "a" "b")))
   )
 )
