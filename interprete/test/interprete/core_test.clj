@@ -268,6 +268,12 @@
   )
 )
 
+(deftest buscar-clave-existente-con-distinto-case-devuelve-valor
+  (testing "buscar una clave existente devuelve un valor asociado"
+    (is (= 3 (buscar 'C '(a 1 b 2 c 3 d 4 e 5))))
+  )
+)
+
 (deftest buscar-clave-inexistente-devuelve-error
   (testing "buscar una clave inexistente devuelve error unbound-symbol"
     (is (= (list '*error* 'unbound-symbol 'f) (buscar 'f '(a 1 b 2 c 3 d 4 e 5))))

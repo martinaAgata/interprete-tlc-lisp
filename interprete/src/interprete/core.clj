@@ -545,11 +545,13 @@
     "Devuelve un ambiente actualizado con una clave (nombre de la variable o funcion) y su valor.
     Si el valor es un error, el ambiente no se modifica. De lo contrario, se le carga o reemplaza el valor."
     ([ambiente clave nuevo_valor]
-        (cond
-            (and (= (.indexOf ambiente clave) -1) (= (count ambiente) 0)) (list clave nuevo_valor)
-            (= (.indexOf ambiente clave) -1) (concat ambiente (list clave nuevo_valor))
-            (error? nuevo_valor) ambiente
-            :else (reemplazar-en-indice ambiente (inc (.indexOf ambiente clave)) nuevo_valor)
+        (let [indice (.indexOf ambiente (symbol (lower-case clave)))]
+            (cond
+                (and (= indice -1) (= (count ambiente) 0)) (list clave nuevo_valor)
+                (= indice -1) (concat ambiente (list (symbol (lower-case clave)) nuevo_valor))
+                (error? nuevo_valor) ambiente
+                :else (reemplazar-en-indice ambiente (inc (.indexOf ambiente (symbol (lower-case clave)))) nuevo_valor)
+            )
         )
     )
 )
@@ -563,9 +565,11 @@
     "Busca una clave en un ambiente (una lista con claves en las posiciones impares [1, 3, 5...] y valores en las pares [2, 4, 6...]
     y devuelve el valor asociado. Devuelve un mensaje de error si no la encuentra."
     ([clave ambiente]
-        (cond
-            (= (.indexOf ambiente clave) -1) (list '*error* 'unbound-symbol clave)
-            :else (nth ambiente (inc (.indexOf ambiente clave)))
+        (let [indice (.indexOf ambiente (symbol (lower-case clave)))]
+            (cond
+                (= indice -1) (list '*error* 'unbound-symbol clave)
+                :else (nth ambiente (inc indice))
+            )
         )
     )
 )
