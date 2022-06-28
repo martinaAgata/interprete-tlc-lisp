@@ -570,29 +570,55 @@
     )
 )
 
-; ; user=> (fnc-append '( (1 2) ))
-; ; (*error* too-few-args)
-; ; user=> (fnc-append '( (1 2) (3) (4 5) (6 7) ))
-; ; (*error* too-many-args)
-; ; user=> (fnc-append '( (1 2) 3 ))
-; ; (*error* list expected 3)
-; ; user=> (fnc-append '( (1 2) A ))
-; ; (*error* list expected A)
-; ; user=> (fnc-append '( (1 2) (3)))
-; ; (1 2 3)
-; ; user=> (fnc-append '( (1 2) nil ))
-; ; (1 2)
-; ; user=> (fnc-append '( () (1 2) ))
-; ; (1 2)
-; ; user=> (fnc-append '(nil nil))
-; ; nil
-; ; user=> (fnc-append '(() ()))
-; ; nil
-; (defn fnc-append
-;   "Devuelve el resultado de fusionar 2 sublistas."
-; )
-;
-;
+; user=> (fnc-append '( (1 2) ))
+; (*error* too-few-args)
+; user=> (fnc-append '( (1 2) (3) (4 5) (6 7) ))
+; (*error* too-many-args)
+; user=> (fnc-append '( (1 2) 3 ))
+; (*error* list expected 3)
+; user=> (fnc-append '( (1 2) A ))
+; (*error* list expected A)
+; user=> (fnc-append '( (1 2) (3)))
+; (1 2 3)
+; user=> (fnc-append '( (1 2) nil ))
+; (1 2)
+; user=> (fnc-append '( () (1 2) ))
+; (1 2)
+; user=> (fnc-append '(nil nil))
+; nil
+; user=> (fnc-append '(() ()))
+; nil
+
+(defn empty-or-nil? [elemento]
+    "Devuelve true si el elemento es una lista vacía o nil."
+    (cond
+        (or (= elemento nil) (= elemento ())) true
+        :else false
+    )
+)
+
+(defn append-not-seq? [lista]
+    "Devuelve true sólo si el primer elemento es una secuencia no vacía y el segundo elemento no es una secuencia ni es nil."
+    (cond
+        (and (and (and (seq? (first lista)) (not (empty? (first lista)))) (not (seq? (second lista)))) (not (nil? (second lista)))) true
+        :else false
+    )
+)
+
+(defn fnc-append
+    "Devuelve el resultado de fusionar 2 sublistas."
+    ([lista]
+        (cond
+            (seq? (controlar-aridad lista 2)) (controlar-aridad lista 2)
+            (and (empty-or-nil? (first lista)) (empty-or-nil? (second lista))) nil
+            (append-not-seq? lista) (list '*error* 'list 'expected (second lista))
+            (append-not-seq? (reverse lista)) (list '*error* 'list 'expected (second lista))
+            :else (concat (first lista) (second lista))
+        )
+    )
+)
+
+
 ; ; user=> (fnc-env () '(a 1 b 2) '(c 3 d 4))
 ; ; (a 1 b 2 c 3 d 4)
 ; ; user=> (fnc-env '(5) '(a 1 b 2) '(c 3 d 4))

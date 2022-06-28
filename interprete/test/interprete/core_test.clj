@@ -273,3 +273,59 @@
     (is (= (list '*error* 'unbound-symbol 'f) (buscar 'f '(a 1 b 2 c 3 d 4 e 5))))
   )
 )
+
+; tests de fnc-append
+
+(deftest fnc-append-one-list-fails
+  (testing "fnc-append devuelve error cuando recibe una sola lista"
+    (is (= (list '*error* 'too-few-args) (fnc-append '( (1 2) ))))
+  )
+)
+
+(deftest fnc-append-more-than-2-lists-fails
+  (testing "fnc-append devuelve error cuando recibe una sola lista"
+    (is (= (list '*error* 'too-many-args) (fnc-append '( (1 2) (3) (4 5) (6 7) ))))
+  )
+)
+
+(deftest fnc-append-non-list-value-fails-1
+  (testing "fnc-append devuelve error cuando recibe un valor que no es lista"
+    (is (= (list '*error* 'list 'expected 3) (fnc-append '( (1 2) 3 ))))
+  )
+)
+
+(deftest fnc-append-non-list-value-fails-2
+  (testing "fnc-append devuelve error cuando recibe un valor que no es lista"
+    (is (= (list '*error* 'list 'expected 'A) (fnc-append '( (1 2) 'A ))))
+  )
+)
+
+(deftest fnc-append-2-lists-succeed
+  (testing "fnc-append devuelve listas concatenadas cuando recibe dos listas"
+    (is (= (list 1 2 3) (fnc-append '( (1 2) (3)))))
+  )
+)
+
+(deftest fnc-append-nil-to-list-returns-list
+  (testing "fnc-append devuelve lista original tras appendear nil"
+    (is (= (list 1 2) (fnc-append '( (1 2) nil ))))
+  )
+)
+
+(deftest fnc-append-empty-list-returns-list
+  (testing "fnc-append devuelve lista originalmente no vacía tras appendear lista vacía"
+    (is (= (list 1 2) (fnc-append '( () (1 2) ))))
+  )
+)
+
+(deftest fnc-append-2-nil-values-return-nil
+  (testing "fnc-append devuelve nil tras appendear dos nil"
+    (is (= nil (fnc-append '( nil nil ))))
+  )
+)
+
+(deftest fnc-append-2-empty-lists-return-nil
+  (testing "fnc-append devuelve nil tras appendear dos listas vacías"
+    (is (= nil (fnc-append '( () () ) )))
+  )
+)
