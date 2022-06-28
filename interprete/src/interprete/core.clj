@@ -618,15 +618,21 @@
 )
 
 
-; ; user=> (fnc-env () '(a 1 b 2) '(c 3 d 4))
-; ; (a 1 b 2 c 3 d 4)
-; ; user=> (fnc-env '(5) '(a 1 b 2) '(c 3 d 4))
-; ; (*error* too-many-args)
-; (defn fnc-env
-;   "Devuelve la fusion de los ambientes global y local."
-; )
-;
-;
+; user=> (fnc-env () '(a 1 b 2) '(c 3 d 4))
+; (a 1 b 2 c 3 d 4)
+; user=> (fnc-env '(5) '(a 1 b 2) '(c 3 d 4))
+; (*error* too-many-args)
+(defn fnc-env
+    "Devuelve la fusion de los ambientes global y local."
+    ([lista ambiente-1 ambiente-2]
+        (cond
+            (not (empty? lista)) (list '*error* 'too-many-args)
+            :else (concat ambiente-1 ambiente-2)
+        )
+    )
+)
+
+
 ; ; user=> (fnc-equal '(1 1))
 ; ; t
 ; ; user=> (fnc-equal '(A a))

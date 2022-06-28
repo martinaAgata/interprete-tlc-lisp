@@ -60,7 +60,7 @@
   )
 )
 
-(deftest igual?-listas distintas
+(deftest igual?-listas-distintas
   (testing "igual? devuelve false comparando listas de caracteres distintas"
     (is (= false (igual? '(a b c) '(a b d))))
   )
@@ -124,7 +124,7 @@
 
 (deftest error?-primer-elemento-de-lista-es-error
   (testing "error? devuelve true al recibir una lista con varios elementos donde el primero es \"*error*\""
-    (is (= true (error? (list '*error* too-many-args))))
+    (is (= true (error? (list '*error* 'too-many-args))))
   )
 )
 
@@ -296,7 +296,7 @@
 
 (deftest fnc-append-recibir-un-elemento-literal-falla
   (testing "fnc-append devuelve error cuando recibe un valor que no es lista"
-    (is (= (list '*error* 'list 'expected 'A) (fnc-append '( (1 2) 'A ))))
+    (is (= (list '*error* 'list 'expected 'A) (fnc-append '( (1 2) A ))))
   )
 )
 
@@ -333,7 +333,6 @@
 ; tests de fnc-env
 
 (deftest fnc-env-recibir-lista-vacia-como-primer-elemento-fusiona-ambientes
-    merges-envs-into-one-when-first-elem-is-empty-list
   (testing "fnc-env devuelve un ambiente tras fusionar dos ambientes recibidos"
     (is (= '(a 1 b 2 c 3 d 4) (fnc-env () '(a 1 b 2) '(c 3 d 4))))
   )
