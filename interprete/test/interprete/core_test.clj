@@ -172,19 +172,19 @@
 
 ; tests de revisar-fnc
 
-(deftest revisar-fnc-devuelve-listado-de-error
+(deftest revisar-fnc-devuelve-lista-de-error
   (testing "revisar-fnc devuelve el listado con mensaje de error recibido"
     (is (= (list '*error* 'too-few-args) (revisar-fnc '(*error* too-few-args))))
   )
 )
 
-(deftest revisar-fnc-devuelve-nil-cuando-el-listado-no-es-error
+(deftest revisar-fnc-devuelve-nil-cuando-lista-no-es-error
   (testing "revisar-fnc devuelve nil al recibir un listado que no es un mensaje de error"
     (is (= nil (revisar-fnc '(too-few-args))))
   )
 )
 
-(deftest revisar-fnc-devuelve-nil-cuando-el-listado-no-es-lista
+(deftest revisar-fnc-devuelve-nil-cuando-lista-no-es-lista
   (testing "revisar-fnc devuelve nil al no recibir una lista como parámetro"
     (is (= nil (revisar-fnc '*error*)))
   )
@@ -222,13 +222,13 @@
   )
 )
 
-(deftest revisar-lae-devuelve-error-cuando-recibe-listado-con-un-error
+(deftest revisar-lae-devuelve-error-cuando-recibe-lista-con-un-error
   (testing "revisar-lae devuelve el único error que hay dentro de la lista"
     (is (= (list '*error* 'too-few-args) (revisar-lae '(1 (*error* too-few-args) 3))))
   )
 )
 
-(deftest revisar-lae-devuelve-primer-error-cuando-recibe-listado-con-multiples-errores
+(deftest revisar-lae-devuelve-primer-error-cuando-recibe-lista-con-multiples-errores
   (testing "revisar-lae devuelve el primer error que hay dentro de la lista"
     (is (= (list '*error* 'too-few-args) (revisar-lae '(1 (*error* too-few-args) (*error* too-many-args) 3))))
   )
@@ -254,7 +254,7 @@
   )
 )
 
-(deftest actualizar-amb-crea-nuevo-ambiente-cuando-recibe-listado-vacio
+(deftest actualizar-amb-crea-nuevo-ambiente-cuando-recibe-lista-vacia
   (testing "actualizar-amb devuelve un ambiente que sólo posee los pares clave-valor que se le hayan indicado"
     (is (= '(b 7) (actualizar-amb () 'b 7)))
   )
@@ -520,19 +520,19 @@
   )
 )
 
-(deftest fnc-add-recibe-listado-con-primer-elemento-caracter-no-numerico-y-devuelve-error
+(deftest fnc-add-recibe-lista-con-primer-elemento-caracter-no-numerico-y-devuelve-error
   (testing "fnc-add devuelve error cuando recibe una lista cuyo primer elemento es un caracter no numérico"
     (is (= (list '*error* 'number-expected 'A) (fnc-add '(A 4 5 6))))
   )
 )
 
-(deftest fnc-add-recibe-listado-con-segundo-elemento-caracter-no-numerico-y-devuelve-error
+(deftest fnc-add-recibe-lista-con-segundo-elemento-caracter-no-numerico-y-devuelve-error
   (testing "fnc-add devuelve error cuando recibe una lista cuyo segundo elemento es un caracter no numérico"
     (is (= (list '*error* 'number-expected 'A) (fnc-add '(3 A 5 6))))
   )
 )
 
-(deftest fnc-add-recibe-listado-con-tercer-elemento-caracter-no-numerico-y-devuelve-error
+(deftest fnc-add-recibe-lista-con-tercer-elemento-caracter-no-numerico-y-devuelve-error
   (testing "fnc-add devuelve error cuando recibe una lista cuyo tercer elemento es un caracter no numérico"
     (is (= (list '*error* 'number-expected 'A) (fnc-add '(3 4 A 6))))
   )
@@ -570,20 +570,70 @@
   )
 )
 
-(deftest fnc-sub-recibe-listado-con-primer-elemento-caracter-no-numerico-y-devuelve-error
+(deftest fnc-sub-recibe-lista-con-primer-elemento-caracter-no-numerico-y-devuelve-error
   (testing "fnc-sub devuelve error cuando recibe una lista cuyo primer elemento es un caracter no numérico"
     (is (= (list '*error* 'number-expected 'A) (fnc-sub '(A 4 5 6))))
   )
 )
 
-(deftest fnc-sub-recibe-listado-con-segundo-elemento-caracter-no-numerico-y-devuelve-error
+(deftest fnc-sub-recibe-lista-con-segundo-elemento-caracter-no-numerico-y-devuelve-error
   (testing "fnc-sub devuelve error cuando recibe una lista cuyo segundo elemento es un caracter no numérico"
     (is (= (list '*error* 'number-expected 'A) (fnc-sub '(3 A 5 6))))
   )
 )
 
-(deftest fnc-sub-recibe-listado-con-tercer-elemento-caracter-no-numerico-y-devuelve-error
+(deftest fnc-sub-recibe-lista-con-tercer-elemento-caracter-no-numerico-y-devuelve-error
   (testing "fnc-sub devuelve error cuando recibe una lista cuyo tercer elemento es un caracter no numérico"
     (is (= (list '*error* 'number-expected 'A) (fnc-sub '(3 4 A 6))))
+  )
+)
+
+; tests de fnc-lt
+
+(deftest fnc-lt-recibe-lista-vacia-y-devuelve-error
+  (testing "fnc-lt devuelve error cuando recibe una lista vacía"
+    (is (= (list '*error* 'too-few-args) (fnc-lt ())))
+  )
+)
+
+(deftest fnc-lt-recibe-lista-de-longitud-mayor-a-2-y-devuelve-error
+  (testing "fnc-lt devuelve error cuando recibe una lista de más de dos elementos"
+    (is (= (list '*error* 'too-many-args) (fnc-lt '(1 2 3))))
+  )
+)
+
+(deftest fnc-lt-recibe-lista-de-longitud-1-y-devuelve-error
+  (testing "fnc-lt devuelve error cuando recibe una lista con un único elemento"
+    (is (= (list '*error* 'too-few-args) (fnc-lt '(1))))
+  )
+)
+
+(deftest fnc-lt-recibe-lista-con-primer-elemento-menor-y-devuelve-t
+  (testing "fnc-lt devuelve t cuando recibe una lista cuyo primer elemento es menor que el segundo"
+    (is (= 't (fnc-lt '(1 2))))
+  )
+)
+
+(deftest fnc-lt-recibe-lista-con-2-elementos-iguales-y-devuelve-nil
+  (testing "fnc-lt devuelve t cuando recibe una lista con dos elementos iguales"
+    (is (= nil (fnc-lt '(1 1))))
+  )
+)
+
+(deftest fnc-lt-recibe-lista-con-segundo-elemento-menor-y-devuelve-t
+  (testing "fnc-lt devuelve nil cuando recibe una lista cuyo segundo elemento es menor que el primero"
+    (is (= nil (fnc-lt '(2 1))))
+  )
+)
+
+(deftest fnc-lt-recibe-lista-con-primer-elemento-caracter-no-numerico-y-devuelve-error
+  (testing "fnc-lt devuelve error cuando recibe una lista cuyo primer elemento es un caracter no numérico"
+    (is (= (list '*error* 'number-expected 'A) (fnc-lt '(A 1))))
+  )
+)
+
+(deftest fnc-lt-recibe-lista-con-segundo-elemento-caracter-no-numerico-y-devuelve-error
+  (testing "fnc-lt devuelve error cuando recibe una lista cuyo segundo elemento es un caracter no numérico"
+    (is (= (list '*error* 'number-expected 'A) (fnc-lt '(1 A))))
   )
 )
