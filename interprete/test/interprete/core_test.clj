@@ -276,25 +276,25 @@
 
 ; tests de fnc-append
 
-(deftest fnc-append-recibir-una-sola-lista-falla
+(deftest fnc-append-recibir-una-sola-lista-devuelve-error
   (testing "fnc-append devuelve error cuando recibe una sola lista"
     (is (= (list '*error* 'too-few-args) (fnc-append '( (1 2) ))))
   )
 )
 
-(deftest fnc-append-recibir-mas-de-dos-listas-falla
+(deftest fnc-append-recibir-mas-de-dos-listas-devuelve-error
   (testing "fnc-append devuelve error cuando recibe una sola lista"
     (is (= (list '*error* 'too-many-args) (fnc-append '( (1 2) (3) (4 5) (6 7) ))))
   )
 )
 
-(deftest fnc-append-recibir-un-elemento-digito-falla
+(deftest fnc-append-recibir-un-elemento-digito-devuelve-error
   (testing "fnc-append devuelve error cuando recibe un valor que no es lista"
     (is (= (list '*error* 'list 'expected 3) (fnc-append '( (1 2) 3 ))))
   )
 )
 
-(deftest fnc-append-recibir-un-elemento-literal-falla
+(deftest fnc-append-recibir-un-elemento-literal-devuelve-error
   (testing "fnc-append devuelve error cuando recibe un valor que no es lista"
     (is (= (list '*error* 'list 'expected 'A) (fnc-append '( (1 2) A ))))
   )
@@ -450,13 +450,13 @@
   )
 )
 
-(deftest fnc-read-recibe-lista-no-vacia-como-parametro-y-falla
+(deftest fnc-read-recibe-lista-no-vacia-como-parametro-y-devuelve-error
   (testing "fnc-read recibe lista con un elemento como parámetro y falla"
     (is (= (list '*error* 'not-implemented) (with-in-str "test-input" (fnc-read '(1)))))
   )
 )
 
-(deftest fnc-read-recibe-lista-con-dos-elementos-como-parametro-y-falla
+(deftest fnc-read-recibe-lista-con-dos-elementos-como-parametro-y-devuelve-error
   (testing "fnc-read recibe una lista con dos elementos como parámetro y falla"
     (is (= (list '*error* 'not-implemented) (with-in-str "test-input" (fnc-read '(1 2)))))
   )
@@ -476,13 +476,13 @@
   )
 )
 
-(deftest fnc-terpri-recibe-lista-no-vacia-como-parametro-y-falla
+(deftest fnc-terpri-recibe-lista-no-vacia-como-parametro-y-devuelve-error
   (testing "fnc-terpri recibe lista con un elemento como parámetro y falla"
     (is (= (list '*error* 'not-implemented) (fnc-terpri '(1))))
   )
 )
 
-(deftest fnc-terpri-recibe-lista-con-dos-elementos-como-parametro-y-falla
+(deftest fnc-terpri-recibe-lista-con-dos-elementos-como-parametro-y-devuelve-error
   (testing "fnc-terpri recibe una lista con dos elementos como parámetro y falla"
     (is (= (list '*error* 'not-implemented) (fnc-terpri '(1 2))))
   )
@@ -735,5 +735,43 @@
 (deftest fnc-ge-recibe-lista-con-segundo-elemento-caracter-no-numerico-y-devuelve-error
   (testing "fnc-ge devuelve error cuando recibe una lista cuyo segundo elemento es un caracter no numérico"
     (is (= (list '*error* 'number-expected 'A) (fnc-ge '(1 A))))
+  )
+)
+
+; tests de fnc-reverse
+
+(deftest fnc-reverse-recibe-lista-vacia-y-devuelve-error
+  (testing "fnc-reverse devuelve error cuando recibe una lista vacía"
+    (is (= (list '*error* 'too-few-args) (fnc-reverse ())))
+  )
+)
+
+(deftest fnc-reverse-recibe-lista-con-mas-de-1-elemento-y-devuelve-error
+  (testing "fnc-reverse devuelve error cuando recibe una lista con más de un elemento"
+    (is (= (list '*error* 'too-many-args) (fnc-reverse '((1 2 3)(4)))))
+  )
+)
+
+(deftest fnc-reverse-recibe-lista-con-unico-elemento-digito-devuelve-error
+  (testing "fnc-reverse devuelve error cuando recibe una lista con un único elemento dígito"
+    (is (= (list '*error* 'list 'expected 1) (fnc-reverse '(1))))
+  )
+)
+
+(deftest fnc-reverse-recibe-lista-con-unico-elemento-caracter-devuelve-error
+  (testing "fnc-reverse devuelve error cuando recibe una lista con un único elemento caracter"
+    (is (= (list '*error* 'list 'expected 'A) (fnc-reverse '(A))))
+  )
+)
+
+(deftest fnc-reverse-recibe-lista-con-unica-lista-con-digito-devuelve-lista
+  (testing "fnc-reverse devuelve lista original cuando recibe una lista con un único elemento lista con un dígito"
+    (is (= (list 1) (fnc-reverse '((1)))))
+  )
+)
+
+(deftest fnc-reverse-recibe-lista-con-unica-lista-digito-devuelve-lista-invertida
+  (testing "fnc-reverse devuelve lista invertida cuando recibe una lista con un único elemento lista con  dígitos"
+    (is (= (list 3 2 1) (fnc-reverse '((1 2 3)))))
   )
 )

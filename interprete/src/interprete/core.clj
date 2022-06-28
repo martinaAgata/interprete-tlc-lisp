@@ -875,23 +875,32 @@
 )
 
 
-; ; user=> (fnc-reverse ())
-; ; (*error* too-few-args)
-; ; user=> (fnc-reverse '(1))
-; ; (*error* list expected 1)
-; ; user=> (fnc-reverse '(A))
-; ; (*error* list expected A)
-; ; user=> (fnc-reverse '((1)) )
-; ; (1)
-; ; user=> (fnc-reverse '((1 2 3)) )
-; ; (3 2 1)
-; ; user=> (fnc-reverse '((1 2 3)(4)) )
-; ; (*error* too-many-args)
-; (defn fnc-reverse
-;   "Devuelve una lista con sus elementos en orden inverso."
-; )
-;
-;
+; user=> (fnc-reverse ())
+; (*error* too-few-args)
+; user=> (fnc-reverse '(1))
+; (*error* list expected 1)
+; user=> (fnc-reverse '(A))
+; (*error* list expected A)
+; user=> (fnc-reverse '((1)) )
+; (1)
+; user=> (fnc-reverse '((1 2 3)) )
+; (3 2 1)
+; user=> (fnc-reverse '((1 2 3)(4)) )
+; (*error* too-many-args)
+(defn fnc-reverse
+    "Devuelve una lista con sus elementos en orden inverso."
+    ([lista]
+        (let [aridad (controlar-aridad lista 1)]
+            (cond
+                (error? aridad) aridad
+                (not (seq? (first lista))) (list '*error* 'list 'expected (first lista))
+                :else (reverse (first lista))
+            )
+        )
+    )
+)
+
+
 ; ; user=> (evaluar-escalar 32 '(v 1 w 3 x 6) '(x 5 y 11 z "hola"))
 ; ; (32 (v 1 w 3 x 6))
 ; ; user=> (evaluar-escalar "chau" '(v 1 w 3 x 6) '(x 5 y 11 z "hola"))
