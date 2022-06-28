@@ -461,3 +461,29 @@
     (is (= (list '*error* 'not-implemented) (with-in-str "test-input" (fnc-read '(1 2)))))
   )
 )
+
+; tests de fnc-terpri
+
+(deftest fnc-terpri-recibe-lista-vacia-e-imprime-newline
+  (testing "fnc-terpri recibe una lista vacía e imprime salto de línea"
+    (is (= "\n" (with-out-str (fnc-terpri '()))))
+  )
+)
+
+(deftest fnc-terpri-recibe-lista-vacia-y-devuelve-nil
+  (testing "fnc-terpri recibe una lista vacía devuelve nil"
+    (is (= nil (fnc-terpri '())))
+  )
+)
+
+(deftest fnc-terpri-recibe-lista-no-vacia-como-parametro-y-falla
+  (testing "fnc-terpri recibe lista con un elemento como parámetro y falla"
+    (is (= (list '*error* 'not-implemented) (fnc-terpri '(1))))
+  )
+)
+
+(deftest fnc-terpri-recibe-lista-con-dos-elementos-como-parametro-y-falla
+  (testing "fnc-terpri recibe una lista con dos elementos como parámetro y falla"
+    (is (= (list '*error* 'not-implemented) (fnc-terpri '(1 2))))
+  )
+)

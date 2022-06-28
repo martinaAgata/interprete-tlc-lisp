@@ -707,18 +707,24 @@
 )
 
 
-; ; user=> (fnc-terpri ())
-; ;
-; ; nil
-; ; user=> (fnc-terpri '(1))
-; ; (*error* not-implemented)
-; ; user=> (fnc-terpri '(1 2))
-; ; (*error* not-implemented)
-; (defn fnc-terpri
-;   "Imprime un salto de línea y devuelve nil."
-; )
+; user=> (fnc-terpri ())
 ;
-;
+; nil
+; user=> (fnc-terpri '(1))
+; (*error* not-implemented)
+; user=> (fnc-terpri '(1 2))
+; (*error* not-implemented)
+(defn fnc-terpri
+    "Imprime un salto de línea y devuelve nil."
+    ([lista]
+        (cond
+            (error? (controlar-aridad lista 0)) (list '*error* 'not-implemented)
+            :else (println)
+        )
+    )
+)
+
+
 ; ; user=> (fnc-add ())
 ; ; (*error* too-few-args)
 ; ; user=> (fnc-add '(3))
