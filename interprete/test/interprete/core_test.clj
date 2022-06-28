@@ -487,3 +487,53 @@
     (is (= (list '*error* 'not-implemented) (fnc-terpri '(1 2))))
   )
 )
+
+; tests de fnc-add
+
+(deftest fnc-add-recibe-lista-vacia-y-devuelve-error
+  (testing "fnc-add devuelve error cuando recibe una lista vacía"
+    (is (= (list '*error* 'too-few-args) (fnc-add ())))
+  )
+)
+
+(deftest fnc-add-recibe-lista-de-longitud-1-y-devuelve-error
+  (testing "fnc-add devuelve error cuando recibe una lista con un elemento"
+    (is (= (list '*error* 'too-few-args) (fnc-add '(3))))
+  )
+)
+
+(deftest fnc-add-recibe-lista-de-longitud-2-y-retorna-suma
+  (testing "fnc-add devuelve suma cuando recibe una lista con dos elementos"
+    (is (= 7 (fnc-add '(3 4))))
+  )
+)
+
+(deftest fnc-add-recibe-lista-de-longitud-3-y-retorna-suma
+  (testing "fnc-add devuelve suma cuando recibe una lista con tres elementos"
+    (is (= 12 (fnc-add '(3 4 5))))
+  )
+)
+
+(deftest fnc-add-recibe-lista-de-longitud-4-y-retorna-suma
+  (testing "fnc-add devuelve suma cuando recibe una lista con cuatro elementos"
+    (is (= 18 (fnc-add '(3 4 5 6))))
+  )
+)
+
+(deftest fnc-add-recibe-listado-con-primer-elemento-caracter-no-numerico-y-devuelve-error
+  (testing "fnc-add devuelve error cuando recibe una lista cuyo primer elemento es un caracter no numérico"
+    (is (= (list '*error* 'number-expected 'A) (fnc-add '(A 4 5 6))))
+  )
+)
+
+(deftest fnc-add-recibe-listado-con-segundo-elemento-caracter-no-numerico-y-devuelve-error
+  (testing "fnc-add devuelve error cuando recibe una lista cuyo segundo elemento es un caracter no numérico"
+    (is (= (list '*error* 'number-expected 'A) (fnc-add '(3 A 5 6))))
+  )
+)
+
+(deftest fnc-add-recibe-listado-con-tercer-elemento-caracter-no-numerico-y-devuelve-error
+  (testing "fnc-add devuelve error cuando recibe una lista cuyo tercer elemento es un caracter no numérico"
+    (is (= (list '*error* 'number-expected 'A) (fnc-add '(3 4 A 6))))
+  )
+)
