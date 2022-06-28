@@ -615,12 +615,12 @@
 )
 
 (deftest fnc-lt-recibe-lista-con-2-elementos-iguales-y-devuelve-nil
-  (testing "fnc-lt devuelve t cuando recibe una lista con dos elementos iguales"
+  (testing "fnc-lt devuelve nil cuando recibe una lista con dos elementos iguales"
     (is (= nil (fnc-lt '(1 1))))
   )
 )
 
-(deftest fnc-lt-recibe-lista-con-segundo-elemento-menor-y-devuelve-t
+(deftest fnc-lt-recibe-lista-con-segundo-elemento-menor-y-devuelve-nil
   (testing "fnc-lt devuelve nil cuando recibe una lista cuyo segundo elemento es menor que el primero"
     (is (= nil (fnc-lt '(2 1))))
   )
@@ -635,5 +635,55 @@
 (deftest fnc-lt-recibe-lista-con-segundo-elemento-caracter-no-numerico-y-devuelve-error
   (testing "fnc-lt devuelve error cuando recibe una lista cuyo segundo elemento es un caracter no numérico"
     (is (= (list '*error* 'number-expected 'A) (fnc-lt '(1 A))))
+  )
+)
+
+; tests de fnc-gt
+
+(deftest fnc-gt-recibe-lista-vacia-y-devuelve-error
+  (testing "fnc-gt devuelve error cuando recibe una lista vacía"
+    (is (= (list '*error* 'too-few-args) (fnc-gt ())))
+  )
+)
+
+(deftest fnc-gt-recibe-lista-de-longitud-mayor-a-2-y-devuelve-error
+  (testing "fnc-gt devuelve error cuando recibe una lista de más de dos elementos"
+    (is (= (list '*error* 'too-many-args) (fnc-gt '(1 2 3))))
+  )
+)
+
+(deftest fnc-gt-recibe-lista-de-longitud-1-y-devuelve-error
+  (testing "fnc-gt devuelve error cuando recibe una lista con un único elemento"
+    (is (= (list '*error* 'too-few-args) (fnc-gt '(1))))
+  )
+)
+
+(deftest fnc-gt-recibe-lista-con-primer-elemento-menor-y-devuelve-nil
+  (testing "fnc-gt devuelve nil cuando recibe una lista cuyo primer elemento es menor que el segundo"
+    (is (= nil (fnc-gt '(1 2))))
+  )
+)
+
+(deftest fnc-gt-recibe-lista-con-2-elementos-iguales-y-devuelve-nil
+  (testing "fnc-gt devuelve nil cuando recibe una lista con dos elementos iguales"
+    (is (= nil (fnc-gt '(1 1))))
+  )
+)
+
+(deftest fnc-gt-recibe-lista-con-segundo-elemento-menor-y-devuelve-t
+  (testing "fnc-gt devuelve t cuando recibe una lista cuyo segundo elemento es menor que el primero"
+    (is (= 't (fnc-gt '(2 1))))
+  )
+)
+
+(deftest fnc-gt-recibe-lista-con-primer-elemento-caracter-no-numerico-y-devuelve-error
+  (testing "fnc-gt devuelve error cuando recibe una lista cuyo primer elemento es un caracter no numérico"
+    (is (= (list '*error* 'number-expected 'A) (fnc-gt '(A 1))))
+  )
+)
+
+(deftest fnc-gt-recibe-lista-con-segundo-elemento-caracter-no-numerico-y-devuelve-error
+  (testing "fnc-gt devuelve error cuando recibe una lista cuyo segundo elemento es un caracter no numérico"
+    (is (= (list '*error* 'number-expected 'A) (fnc-gt '(1 A))))
   )
 )
