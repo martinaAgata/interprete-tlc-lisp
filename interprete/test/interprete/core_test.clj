@@ -343,3 +343,65 @@
     (is (= (list '*error* 'too-many-args) (fnc-env '(5) '(a 1 b 2) '(c 3 d 4))))
   )
 )
+
+; tests de fnc-equal
+
+(deftest fnc-equal-devuelve-t-con-digitos-iguales
+  (testing "fnc-env devuelve t al recibir un listado de dos dígitos iguales"
+    (is (= 't (fnc-equal '(1 1))))
+  )
+)
+
+(deftest fnc-equal-devuelve-t-con-caracteres-iguales-en-distinto-case
+  (testing "fnc-env devuelve t al recibir un listado con dos caracteres iguales en distinto case"
+    (is (= 't (fnc-equal '(A a))))
+  )
+)
+
+(deftest fnc-equal-devuelve-t-con-strings-iguales-en-distinto-case
+  (testing "fnc-env devuelve t al recibir un listado con dos strings iguales"
+    (is (= 't (fnc-equal '("1" "1"))))
+  )
+)
+
+(deftest fnc-equal-devuelve-t-comparando-nil-contra-nil-literal
+  (testing "fnc-env devuelve t al recibir un listado con un elemento nil y otro nil literal"
+    (is (= 't (fnc-equal '(nil NIL))))
+  )
+)
+
+(deftest fnc-equal-devuelve-nil-con-digitos-distintos
+  (testing "fnc-env devuelve nil al recibir un listado de dos dígitos distintos"
+    (is (= nil (fnc-equal '(1 2))))
+  )
+)
+
+(deftest fnc-equal-devuelve-nil-con-caracteres-distintos
+  (testing "fnc-env devuelve nil al recibir un listado con dos caracteres distintos"
+    (is (= nil (fnc-equal '(A B))))
+  )
+)
+
+(deftest fnc-equal-devuelve-nil-comparando-digito-contra-string
+  (testing "fnc-env devuelve nil al recibir un listado con un string de un digito y el mismo digito"
+    (is (= nil (fnc-equal '(A B))))
+  )
+)
+
+(deftest fnc-equal-devuelve-error-tras-recibir-lista-vacia
+  (testing "fnc-env devuelve error al recibir como único parámetro una lista vacía"
+    (is (= (list '*error* 'too-few-args) (fnc-equal ())))
+  )
+)
+
+(deftest fnc-equal-devuelve-error-tras-recibir-lista-de-longitud-uno
+  (testing "fnc-env devuelve error al recibir un listado de longitud uno"
+    (is (= (list '*error* 'too-few-args) (fnc-equal '(A))))
+  )
+)
+
+(deftest fnc-equal-devuelve-error-tras-recibir-lista-de-longitud-mayor-a-2
+  (testing "fnc-env devuelve error al recibir un listado de longitud mayor a 2"
+    (is (= (list '*error* 'too-many-args) (fnc-equal '(A a A))))
+  )
+)

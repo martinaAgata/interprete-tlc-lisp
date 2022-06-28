@@ -633,31 +633,40 @@
 )
 
 
-; ; user=> (fnc-equal '(1 1))
-; ; t
-; ; user=> (fnc-equal '(A a))
-; ; t
-; ; user=> (fnc-equal '("1" "1"))
-; ; t
-; ; user=> (fnc-equal '(nil NIL))
-; ; t
-; ; user=> (fnc-equal '(1 2))
-; ; nil
-; ; user=> (fnc-equal '(A B))
-; ; nil
-; ; user=> (fnc-equal '("1" 1))
-; ; nil
-; ; user=> (fnc-equal ())
-; ; (*error* too-few-args)
-; ; user=> (fnc-equal '(A))
-; ; (*error* too-few-args)
-; ; user=> (fnc-equal '(A a A))
-; ; (*error* too-many-args)
-; (defn fnc-equal
-;   "Compara 2 elementos. Si son iguales, devuelve t. Si no, nil."
-; )
-;
-;
+; user=> (fnc-equal '(1 1))
+; t
+; user=> (fnc-equal '(A a))
+; t
+; user=> (fnc-equal '("1" "1"))
+; t
+; user=> (fnc-equal '(nil NIL))
+; t
+; user=> (fnc-equal '(1 2))
+; nil
+; user=> (fnc-equal '(A B))
+; nil
+; user=> (fnc-equal '("1" 1))
+; nil
+; user=> (fnc-equal ())
+; (*error* too-few-args)
+; user=> (fnc-equal '(A))
+; (*error* too-few-args)
+; user=> (fnc-equal '(A a A))
+; (*error* too-many-args)
+(defn fnc-equal
+    "Compara 2 elementos. Si son iguales, devuelve t. Si no, nil."
+    ([lista]
+        (let [aridad (controlar-aridad lista 2)]
+            (cond
+                (error? aridad) aridad
+                (igual? (first lista) (second lista)) 't
+                :else nil
+            )
+        )
+    )
+)
+
+
 ; ; user=> (fnc-read ())
 ; ; 1
 ; ; 1
