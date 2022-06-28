@@ -450,14 +450,14 @@
   )
 )
 
-(deftest fnc-read-recibe-parametro-1-y-falla
-  (testing "fnc-read recibe dígito 1 como parámetro y falla"
+(deftest fnc-read-recibe-lista-no-vacia-como-parametro-y-falla
+  (testing "fnc-read recibe lista con un elemento como parámetro y falla"
     (is (= (list '*error* 'not-implemented) (with-in-str "test-input" (fnc-read '(1)))))
   )
 )
 
-(deftest fnc-read-recibe-parametros-1-y-2-y-falla
-  (testing "fnc-read recibe dos elementos (dígitos 1 y 2) como parámetros y falla"
+(deftest fnc-read-recibe-lista-con-dos-elementos-como-parametro-y-falla
+  (testing "fnc-read recibe una lista con dos elementos como parámetro y falla"
     (is (= (list '*error* 'not-implemented) (with-in-str "test-input" (fnc-read '(1 2)))))
   )
 )
