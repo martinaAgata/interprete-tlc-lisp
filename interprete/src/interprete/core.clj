@@ -753,27 +753,35 @@
 )
 
 
-; ; user=> (fnc-sub ())
-; ; (*error* too-few-args)
-; ; user=> (fnc-sub '(3))
-; ; -3
-; ; user=> (fnc-sub '(3 4))
-; ; -1
-; ; user=> (fnc-sub '(3 4 5))
-; ; -6
-; ; user=> (fnc-sub '(3 4 5 6))
-; ; -12
-; ; user=> (fnc-sub '(A 4 5 6))
-; ; (*error* number-expected A)
-; ; user=> (fnc-sub '(3 A 5 6))
-; ; (*error* number-expected A)
-; ; user=> (fnc-sub '(3 4 A 6))
-; ; (*error* number-expected A)
-; (defn fnc-sub
-;   "Resta los elementos de un lista. Minimo 1 elemento."
-; )
-;
-;
+; user=> (fnc-sub ())
+; (*error* too-few-args)
+; user=> (fnc-sub '(3))
+; -3
+; user=> (fnc-sub '(3 4))
+; -1
+; user=> (fnc-sub '(3 4 5))
+; -6
+; user=> (fnc-sub '(3 4 5 6))
+; -12
+; user=> (fnc-sub '(A 4 5 6))
+; (*error* number-expected A)
+; user=> (fnc-sub '(3 A 5 6))
+; (*error* number-expected A)
+; user=> (fnc-sub '(3 4 A 6))
+; (*error* number-expected A)
+(defn fnc-sub
+    "Resta los elementos de un lista. Minimo 1 elemento."
+    ([lista]
+        (cond
+            (< (count lista) 1) (list '*error* 'too-few-args)
+            (not-every? number? lista) (list '*error* 'number-expected (first (filter (complement number?) lista)))
+            (= (count lista) 1) (- (first lista))
+            :else (reduce - lista)
+        )
+    )
+)
+
+
 ; ; user=> (fnc-lt ())
 ; ; (*error* too-few-args)
 ; ; user=> (fnc-lt '(1))

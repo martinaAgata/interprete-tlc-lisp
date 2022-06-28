@@ -537,3 +537,53 @@
     (is (= (list '*error* 'number-expected 'A) (fnc-add '(3 4 A 6))))
   )
 )
+
+; tests de fnc-sub
+
+(deftest fnc-sub-recibe-lista-vacia-y-devuelve-error
+  (testing "fnc-sub devuelve error cuando recibe una lista vacía"
+    (is (= (list '*error* 'too-few-args) (fnc-sub ())))
+  )
+)
+
+(deftest fnc-sub-recibe-lista-de-longitud-1-y-devuelve-signo-opuesto
+  (testing "fnc-sub devuelve elemento con signo opuesto cuando recibe una lista con un elemento"
+    (is (= -3 (fnc-sub '(3))))
+  )
+)
+
+(deftest fnc-sub-recibe-lista-de-longitud-2-y-retorna-resta
+  (testing "fnc-sub devuelve resta cuando recibe una lista con dos elementos"
+    (is (= -1 (fnc-sub '(3 4))))
+  )
+)
+
+(deftest fnc-sub-recibe-lista-de-longitud-3-y-retorna-resta
+  (testing "fnc-sub devuelve resta cuando recibe una lista con tres elementos"
+    (is (= -6 (fnc-sub '(3 4 5))))
+  )
+)
+
+(deftest fnc-sub-recibe-lista-de-longitud-4-y-retorna-resta
+  (testing "fnc-sub devuelve resta cuando recibe una lista con cuatro elementos"
+    (is (= -12 (fnc-sub '(3 4 5 6))))
+  )
+)
+
+(deftest fnc-sub-recibe-listado-con-primer-elemento-caracter-no-numerico-y-devuelve-error
+  (testing "fnc-sub devuelve error cuando recibe una lista cuyo primer elemento es un caracter no numérico"
+    (is (= (list '*error* 'number-expected 'A) (fnc-sub '(A 4 5 6))))
+  )
+)
+
+(deftest fnc-sub-recibe-listado-con-segundo-elemento-caracter-no-numerico-y-devuelve-error
+  (testing "fnc-sub devuelve error cuando recibe una lista cuyo segundo elemento es un caracter no numérico"
+    (is (= (list '*error* 'number-expected 'A) (fnc-sub '(3 A 5 6))))
+  )
+)
+
+(deftest fnc-sub-recibe-listado-con-tercer-elemento-caracter-no-numerico-y-devuelve-error
+  (testing "fnc-sub devuelve error cuando recibe una lista cuyo tercer elemento es un caracter no numérico"
+    (is (= (list '*error* 'number-expected 'A) (fnc-sub '(3 4 A 6))))
+  )
+)
