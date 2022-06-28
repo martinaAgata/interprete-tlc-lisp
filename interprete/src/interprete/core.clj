@@ -844,27 +844,37 @@
 )
 
 
-; ; user=> (fnc-ge ())
-; ; (*error* too-few-args)
-; ; user=> (fnc-ge '(1))
-; ; (*error* too-few-args)
-; ; user=> (fnc-ge '(2 1))
-; ; t
-; ; user=> (fnc-ge '(1 1))
-; ; t
-; ; user=> (fnc-ge '(1 2))
-; ; nil
-; ; user=> (fnc-ge '(A 1))
-; ; (*error* number-expected A)
-; ; user=> (fnc-ge '(1 A))
-; ; (*error* number-expected A)
-; ; user=> (fnc-ge '(1 2 3))
-; ; (*error* too-many-args)
-; (defn fnc-ge
-;     "Devuelve t si el primer numero es mayor o igual que el segundo; si no, nil."
-; )
-;
-;
+; user=> (fnc-ge ())
+; (*error* too-few-args)
+; user=> (fnc-ge '(1))
+; (*error* too-few-args)
+; user=> (fnc-ge '(2 1))
+; t
+; user=> (fnc-ge '(1 1))
+; t
+; user=> (fnc-ge '(1 2))
+; nil
+; user=> (fnc-ge '(A 1))
+; (*error* number-expected A)
+; user=> (fnc-ge '(1 A))
+; (*error* number-expected A)
+; user=> (fnc-ge '(1 2 3))
+; (*error* too-many-args)
+(defn fnc-ge
+    "Devuelve t si el primer numero es mayor o igual que el segundo; si no, nil."
+    ([lista]
+        (let [aridad (controlar-aridad lista 2)]
+            (cond
+                (error? aridad) aridad
+                (not-every? number? lista) (list '*error* 'number-expected (first (filter (complement number?) lista)))
+                (>= (first lista) (second lista)) 't
+                :else nil
+            )
+        )
+    )
+)
+
+
 ; ; user=> (fnc-reverse ())
 ; ; (*error* too-few-args)
 ; ; user=> (fnc-reverse '(1))

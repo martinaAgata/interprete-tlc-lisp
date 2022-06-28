@@ -687,3 +687,53 @@
     (is (= (list '*error* 'number-expected 'A) (fnc-gt '(1 A))))
   )
 )
+
+; tests de fnc-ge
+
+(deftest fnc-ge-recibe-lista-vacia-y-devuelve-error
+  (testing "fnc-ge devuelve error cuando recibe una lista vacía"
+    (is (= (list '*error* 'too-few-args) (fnc-ge ())))
+  )
+)
+
+(deftest fnc-ge-recibe-lista-de-longitud-mayor-a-2-y-devuelve-error
+  (testing "fnc-ge devuelve error cuando recibe una lista de más de dos elementos"
+    (is (= (list '*error* 'too-many-args) (fnc-ge '(1 2 3))))
+  )
+)
+
+(deftest fnc-ge-recibe-lista-de-longitud-1-y-devuelve-error
+  (testing "fnc-ge devuelve error cuando recibe una lista con un único elemento"
+    (is (= (list '*error* 'too-few-args) (fnc-ge '(1))))
+  )
+)
+
+(deftest fnc-ge-recibe-lista-con-primer-elemento-mayor-o-igual-y-devuelve-t
+  (testing "fnc-ge devuelve t cuando recibe una lista cuyo primer elemento es mayor o igual que el segundo"
+    (is (= 't (fnc-ge '(2 1))))
+  )
+)
+
+(deftest fnc-ge-recibe-lista-con-2-elementos-iguales-y-devuelve-t
+  (testing "fnc-ge devuelve t cuando recibe una lista con dos elementos iguales"
+    (is (= 't (fnc-ge '(1 1))))
+  )
+)
+
+(deftest fnc-ge-recibe-lista-con-primer-elemento-menor-y-devuelve-nil
+  (testing "fnc-ge devuelve nil cuando recibe una lista cuyo primer elemento es menor que el segundo"
+    (is (= nil (fnc-ge '(1 2))))
+  )
+)
+
+(deftest fnc-ge-recibe-lista-con-primer-elemento-caracter-no-numerico-y-devuelve-error
+  (testing "fnc-ge devuelve error cuando recibe una lista cuyo primer elemento es un caracter no numérico"
+    (is (= (list '*error* 'number-expected 'A) (fnc-ge '(A 1))))
+  )
+)
+
+(deftest fnc-ge-recibe-lista-con-segundo-elemento-caracter-no-numerico-y-devuelve-error
+  (testing "fnc-ge devuelve error cuando recibe una lista cuyo segundo elemento es un caracter no numérico"
+    (is (= (list '*error* 'number-expected 'A) (fnc-ge '(1 A))))
+  )
+)
