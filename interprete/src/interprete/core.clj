@@ -611,8 +611,7 @@
         (cond
             (seq? (controlar-aridad lista 2)) (controlar-aridad lista 2)
             (and (empty-or-nil? (first lista)) (empty-or-nil? (second lista))) nil
-            (append-not-seq? lista) (list '*error* 'list 'expected (second lista))
-            (append-not-seq? (reverse lista)) (list '*error* 'list 'expected (second lista))
+            (or (append-not-seq? lista) (append-not-seq? (reverse lista))) (list '*error* 'list 'expected (second lista))
             :else (concat (first lista) (second lista))
         )
     )
