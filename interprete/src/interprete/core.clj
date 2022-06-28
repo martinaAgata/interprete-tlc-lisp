@@ -667,37 +667,46 @@
 )
 
 
-; ; user=> (fnc-read ())
-; ; 1
-; ; 1
-; ; user=> (fnc-read ())
-; ; a
-; ; a
-; ; user=> (fnc-read ())
-; ; "hola"
-; ; "hola"
-; ; user=> (fnc-read ())
-; ; (hola mundo)
-; ; (hola mundo)
-; ; user=> (fnc-read ())
-; ; (hola
-; ; mundo)
-; ; (hola mundo)
-; ; user=> (fnc-read ())
-; ; ()
-; ; nil
-; ; user=> (fnc-read ())
-; ; nil
-; ; nil
-; ; user=> (fnc-read '(1))
-; ; (*error* not-implemented)
-; ; user=> (fnc-read '(1 2))
-; ; (*error* not-implemented)
-; (defn fnc-read
-;   "Devuelve la lectura de un elemento de TLC-LISP desde la terminal/consola."
-; )
-;
-;
+; user=> (fnc-read ())
+; 1
+; 1
+; user=> (fnc-read ())
+; a
+; a
+; user=> (fnc-read ())
+; "hola"
+; "hola"
+; user=> (fnc-read ())
+; (hola mundo)
+; (hola mundo)
+; user=> (fnc-read ())
+; (hola
+; mundo)
+; (hola mundo)
+; user=> (fnc-read ())
+; ()
+; nil
+; user=> (fnc-read ())
+; nil
+; nil
+; user=> (fnc-read '(1))
+; (*error* not-implemented)
+; user=> (fnc-read '(1 2))
+; (*error* not-implemented)
+(defn fnc-read
+    "Devuelve la lectura de un elemento de TLC-LISP desde la terminal/consola."
+    ([elemento]
+        (let [stream (read)]
+            (cond
+                (error? (controlar-aridad elemento 0)) (list '*error* 'not-implemented)
+                (or (= stream ()) (= stream nil)) nil
+                :else stream
+            )
+        )
+    )
+)
+
+
 ; ; user=> (fnc-terpri ())
 ; ;
 ; ; nil

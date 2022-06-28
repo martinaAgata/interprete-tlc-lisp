@@ -405,3 +405,59 @@
     (is (= (list '*error* 'too-many-args) (fnc-equal '(A a A))))
   )
 )
+
+; tests de fnc-read
+
+(deftest fnc-read-recibe-digito-y-lo-retorna
+  (testing "fnc-read recibe un dígito y lo devuelve correctamente"
+    (is (= 1 (with-in-str "1" (fnc-read '()))))
+  )
+)
+
+(deftest fnc-read-recibe-caracter-y-lo-retorna
+  (testing "fnc-read recibe un caracter y lo devuelve correctamente"
+    (is (= 'a (with-in-str "a" (fnc-read '()))))
+  )
+)
+
+(deftest fnc-read-recibe-cadena-y-la-retorna
+  (testing "fnc-read recibe una cadena y la devuelve correctamente"
+    (is (= '"hola" (with-in-str "\"hola\"" (fnc-read '()))))
+  )
+)
+
+(deftest fnc-read-recibe-cadena-lista-y-la-retorna
+  (testing "fnc-read recibe una lista y la devuelve correctamente"
+    (is (= '(hola mundo) (with-in-str "(hola mundo)" (fnc-read '()))))
+  )
+)
+
+(deftest fnc-read-recibe-cadena-lista-con-newline-y-la-retorna
+  (testing "fnc-read recibe una lista y la devuelve correctamente"
+    (is (= '(hola mundo) (with-in-str "(hola\nmundo)" (fnc-read '()))))
+  )
+)
+
+(deftest fnc-read-recibe-lista-vacia-y-retorna-nil
+  (testing "fnc-read recibe una lista vacía y devuelve nil"
+    (is (= nil (with-in-str "()" (fnc-read '()))))
+  )
+)
+
+(deftest fnc-read-recibe-nil-y-retorna-nil
+  (testing "fnc-read recibe nil y devuelve nil"
+    (is (= nil (with-in-str "nil" (fnc-read '()))))
+  )
+)
+
+(deftest fnc-read-recibe-parametro-1-y-falla
+  (testing "fnc-read recibe dígito 1 como parámetro y falla"
+    (is (= (list '*error* 'not-implemented) (with-in-str "test-input" (fnc-read '(1)))))
+  )
+)
+
+(deftest fnc-read-recibe-parametros-1-y-2-y-falla
+  (testing "fnc-read recibe dos elementos (dígitos 1 y 2) como parámetros y falla"
+    (is (= (list '*error* 'not-implemented) (with-in-str "test-input" (fnc-read '(1 2)))))
+  )
+)
