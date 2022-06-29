@@ -803,25 +803,105 @@
 )
 
 (deftest evaluar-escalar-recibe-simbolo-en-mayuscula-y-devuelve-valor-asociado-en-ambiente-global
-  (testing "evaluar-escalar recibe un literal en mayúscula y devuelve valor asociado en ambiente global ignorando case"
+  (testing "evaluar-escalar recibe un literal en mayúscula y devuelve valor asociado encontrado sólo en ambiente global ignorando case"
      (is (= '("hola" (v 1 w 3 x 6)) (evaluar-escalar 'Z '(v 1 w 3 x 6) '(x 5 y 11 z "hola"))))
   )
 )
 
 (deftest evaluar-escalar-recibe-simbolo-y-devuelve-valor-asociado-en-ambiente-local
-  (testing "evaluar-escalar"
+  (testing "evaluar-escalar recibe símbolo y devuelve el valor asociado encontrado sólo en el ambiente local"
     (is (= '(3 (v 1 w 3 x 6)) (evaluar-escalar 'w '(v 1 w 3 x 6) '(x 5 y 11 z "hola"))))
   )
 )
 
 (deftest evaluar-escalar-recibe-simbolo-presente-en-ambos-ambientes-y-devuelve-valor-asociado-en-ambiente-global
-  (testing "evaluar-escalar"
+  (testing "evaluar-escalar recibe símbolo presente en ambos ambientes y devuelve valor asociado del ambiente global"
     (is (= '(5 (v 1 w 3 x 6)) (evaluar-escalar 'X '(v 1 w 3 x 6) '(x 5 y 11 z "hola"))))
   )
 )
 
 (deftest evaluar-escalar-recibe-simbolo-inexistente-en-ambos-ambientes-y-devuelve-error
-  (testing "evaluar-escalar"
+  (testing "evaluar-escalar recibe símbolo que no se encuentra en ningún ambiente y devuelve error"
     (is (= '((*error* unbound-symbol n) (v 1 w 3 x 6)) (evaluar-escalar 'n '(v 1 w 3 x 6) '(x 5 y 11 z "hola"))))
+  )
+)
+
+; tests de evaluar-de
+
+(deftest evaluar-de-1
+  (testing "evaluar-de función con tres elementos"
+    (is (= '(f (x 1 f (lambda (x)))) (evaluar-de '(de f (x)) '(x 1))))
+  )
+)
+
+(deftest evaluar-de-2
+  (testing "evaluar-de función con cuatro elementos"
+    (is (= '(f (x 1 f (lambda (x) 2))) (evaluar-de '(de f (x) 2) '(x 1))))
+  )
+)
+
+(deftest evaluar-de-3
+  (testing "evaluar-de cuarto elemento de función es lista"
+    (is (= '(f (x 1 f (lambda (x) (+ x 1)))) (evaluar-de '(de f (x) (+ x 1)) '(x 1))))
+  )
+)
+
+(deftest evaluar-de-4
+  (testing "evaluar-de función con cuatro elementos (hay dos listas)"
+    (is (= '(f (x 1 f (lambda (x y) (+ x y)))) (evaluar-de '(de f (x y) (+ x y)) '(x 1))))
+  )
+)
+
+(deftest evaluar-de-5
+  (testing "evaluar-de función con 6 elementos (hay tres listas y un literal)"
+    (is (= '(f (x 1 f (lambda (x y) (prin3 x) (terpri) y))) (evaluar-de '(de f (x y) (prin3 x) (terpri) y) '(x 1))))
+  )
+)
+
+(deftest evaluar-de-error-1
+  (testing "evaluar-de longitud función tiene un único elemento"
+    (is (= '((*error* list expected nil) (x 1)) (evaluar-de '(de) '(x 1))))
+  )
+)
+
+(deftest evaluar-de-error-2
+  (testing "evaluar-de función tiene dos elementos (el segundo es un símbolo)"
+    (is (= '((*error* list expected nil) (x 1)) (evaluar-de '(de f) '(x 1))))
+  )
+)
+
+(deftest evaluar-de-error-3
+  (testing "evaluar-de tercer elemento de función no es un símbolo"
+    (is (= '((*error* list expected 2) (x 1)) (evaluar-de '(de f 2) '(x 1))))
+  )
+)
+
+(deftest evaluar-de-error-4
+  (testing "evaluar-de tercer y cuarto elemento de función no son símbolos"
+    (is (= '((*error* list expected 2) (x 1)) (evaluar-de '(de f 2 3) '(x 1))))
+  )
+)
+
+(deftest evaluar-de-error-5
+  (testing "evaluar-de tiene dos elementos (el segundo es una lista)"
+    (is (= '((*error* list expected nil) (x 1)) (evaluar-de '(de (f)) '(x 1))))
+  )
+)
+
+(deftest evaluar-de-error-6
+  (testing "evaluar-de tercer elemento es un símbolo"
+    (is (= '((*error* list expected x) (x 1)) (evaluar-de '(de 2 x) '(x 1))))
+  )
+)
+
+(deftest evaluar-de-error-7
+  (testing "evaluar-de segundo elemento no es un símbolo"
+    (is (= '((*error* symbol expected 2) (x 1)) (evaluar-de '(de 2 (x)) '(x 1))))
+  )
+)
+
+(deftest evaluar-de-error-8
+  (testing "evaluar-de el segundo elemento es nil"
+    (is (= '((*error* cannot-set nil) (x 1)) (evaluar-de '(de nil (x) 2) '(x 1))))
   )
 )
