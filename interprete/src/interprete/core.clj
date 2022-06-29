@@ -990,56 +990,64 @@
 ; (8 (gt gt nil nil t t v 1 w 3 x 6))
 ; user=> (evaluar-if '(if (gt 0 2) a (setq m 8)) '(gt gt nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
 ; (8 (gt gt nil nil t t v 1 w 3 x 6 m 8))
-;evaluar: "Evalua una expresion 'expre' en los ambientes global y local. Devuelve un lista con un valor resultante y un ambiente."
-;parametros de evaluar: [expre amb-global amb-local]
 (defn evaluar-if [forma amb-global amb-local]
     "Evalua una forma 'if'. Devuelve una lista con el resultado y un ambiente eventualmente modificado."
     (let [longitud-forma (count forma)]
         (let [resultado (evaluar (second forma) amb-global amb-local)]
             (cond
-                ; (not (seq? expre))
                 (and (igual? longitud-forma 2)) (evaluar nil amb-global amb-local) ; si longitud de forma-if es 2
                 (and (igual? longitud-forma 3) (nil? (second forma))) (evaluar nil amb-global amb-local) ; si longitud es 3 y el segundo elemento es nil
                 (error? (first resultado)) resultado ; si la expresion es nil, () o error, evaluar la devuelve intacta junto con el ambiente global (igual que lo que pide esta función)
-                (first resultado) (evaluar (nth forma 2) amb-global amb-local) ; si resultado de evaluación de segundo elemento es nil, entonces evaluar cuarto elemento
-                :else (evaluar (last forma) amb-global amb-local) ; si es true, evaluar tercer elemento
+                (first resultado) (evaluar (nth forma 2) amb-global amb-local) ; en caso contrario, evaluar expresión siguiente
+                :else (evaluar (last forma) amb-global amb-local) ; por default retornar resultado de evaluar última expresión
             )
         )
     )
 )
 
 
-; ; user=> (evaluar-or '(or) '(nil nil t t w 5 x 4) '(x 1 y nil z 3))
-; ; (nil (nil nil t t w 5 x 4))
-; ; user=> (evaluar-or '(or nil) '(nil nil t t w 5 x 4) '(x 1 y nil z 3))
-; ; (nil (nil nil t t w 5 x 4))
-; ; user=> (evaluar-or '(or t) '(nil nil t t w 5 x 4) '(x 1 y nil z 3))
-; ; (t (nil nil t t w 5 x 4))
-; ; user=> (evaluar-or '(or w) '(nil nil t t w 5 x 4) '(x 1 y nil z 3))
-; ; (5 (nil nil t t w 5 x 4))
-; ; user=> (evaluar-or '(or r) '(nil nil t t w 5 x 4) '(x 1 y nil z 3))
-; ; ((*error* unbound-symbol r) (nil nil t t w 5 x 4))
-; ; user=> (evaluar-or '(or y) '(nil nil t t w 5 x 4) '(x 1 y nil z 3))
-; ; (nil (nil nil t t w 5 x 4))
-; ; user=> (evaluar-or '(or 6) '(nil nil t t w 5 x 4) '(x 1 y nil z 3))
-; ; (6 (nil nil t t w 5 x 4))
-; ; user=> (evaluar-or '(or nil 6) '(nil nil t t w 5 x 4) '(x 1 y nil z 3))
-; ; (6 (nil nil t t w 5 x 4))
-; ; user=> (evaluar-or '(or (setq b 8) nil) '(nil nil t t w 5 x 4) '(x 1 y nil z 3))
-; ; (8 (nil nil t t w 5 x 4 b 8))
-; ; user=> (evaluar-or '(or nil 6 nil) '(nil nil t t w 5 x 4) '(x 1 y nil z 3))
-; ; (6 (nil nil t t w 5 x 4))
-; ; user=> (evaluar-or '(or nil 6 r nil) '(nil nil t t w 5 x 4) '(x 1 y nil z 3))
-; ; (6 (nil nil t t w 5 x 4))
-; ; user=> (evaluar-or '(or nil t r nil) '(nil nil t t w 5 x 4) '(x 1 y nil z 3))
-; ; (t (nil nil t t w 5 x 4))
-; ; user=> (evaluar-or '(or nil nil nil nil) '(nil nil t t w 5 x 4) '(x 1 y nil z 3))
-; ; (nil (nil nil t t w 5 x 4))
-; (defn evaluar-or
-;   "Evalua una forma 'or'. Devuelve una lista con el resultado y un ambiente."
-; )
-;
-;
+; user=> (evaluar-or '(or) '(nil nil t t w 5 x 4) '(x 1 y nil z 3))
+; (nil (nil nil t t w 5 x 4))
+; user=> (evaluar-or '(or nil) '(nil nil t t w 5 x 4) '(x 1 y nil z 3))
+; (nil (nil nil t t w 5 x 4))
+; user=> (evaluar-or '(or t) '(nil nil t t w 5 x 4) '(x 1 y nil z 3))
+; (t (nil nil t t w 5 x 4))
+; user=> (evaluar-or '(or w) '(nil nil t t w 5 x 4) '(x 1 y nil z 3))
+; (5 (nil nil t t w 5 x 4))
+; user=> (evaluar-or '(or r) '(nil nil t t w 5 x 4) '(x 1 y nil z 3))
+; ((*error* unbound-symbol r) (nil nil t t w 5 x 4))
+; user=> (evaluar-or '(or y) '(nil nil t t w 5 x 4) '(x 1 y nil z 3))
+; (nil (nil nil t t w 5 x 4))
+; user=> (evaluar-or '(or 6) '(nil nil t t w 5 x 4) '(x 1 y nil z 3))
+; (6 (nil nil t t w 5 x 4))
+; user=> (evaluar-or '(or nil 6) '(nil nil t t w 5 x 4) '(x 1 y nil z 3))
+; (6 (nil nil t t w 5 x 4))
+; user=> (evaluar-or '(or (setq b 8) nil) '(nil nil t t w 5 x 4) '(x 1 y nil z 3))
+; (8 (nil nil t t w 5 x 4 b 8))
+; user=> (evaluar-or '(or nil 6 nil) '(nil nil t t w 5 x 4) '(x 1 y nil z 3))
+; (6 (nil nil t t w 5 x 4))
+; user=> (evaluar-or '(or nil 6 r nil) '(nil nil t t w 5 x 4) '(x 1 y nil z 3))
+; (6 (nil nil t t w 5 x 4))
+; user=> (evaluar-or '(or nil t r nil) '(nil nil t t w 5 x 4) '(x 1 y nil z 3))
+; (t (nil nil t t w 5 x 4))
+; user=> (evaluar-or '(or nil nil nil nil) '(nil nil t t w 5 x 4) '(x 1 y nil z 3))
+; (nil (nil nil t t w 5 x 4))
+(defn evaluar-or [forma amb-global amb-local]
+    "Evalua una forma 'or'. Devuelve una lista con el resultado y un ambiente."
+    (let [tail (drop 1 forma)]
+        (if (or (nil? tail) (empty? tail)) (list nil amb-global)
+            (let [resultado (evaluar (second forma) amb-global amb-local)]
+                (cond
+                    (or (error? (first resultado)) (igual? (drop 2 forma) nil)) resultado ; si primera evaluación devuelve error o siguiente elemento es nil, retornar resultado
+                    (igual? (first resultado) nil) (evaluar (list 'or (first (drop 2 forma))) (second resultado) amb-local) ; si no hubo error pero resultado nil, evaluar siguiente expresión
+                    ; completar
+                )
+            )
+        )
+    )
+)
+
+
 ; ; user=> (evaluar-setq '(setq) '(nil nil t t + add w 5 x 4) '(x 1 y nil z 3))
 ; ; ((*error* list expected nil) (nil nil t t + add w 5 x 4))
 ; ; user=> (evaluar-setq '(setq m) '(nil nil t t + add w 5 x 4) '(x 1 y nil z 3))

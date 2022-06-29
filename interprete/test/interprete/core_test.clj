@@ -1013,3 +1013,82 @@
     (is (= '(8 (gt gt nil nil t t v 1 w 3 x 6 m 8)) (evaluar-if '(if (gt 0 2) a (setq m 8)) '(gt gt nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))))
   )
 )
+
+; tests de evaluar-or
+
+(deftest evaluar-or-1
+  (testing "evaluar-or sin expresión devuelve nil"
+    (is (= '(nil (nil nil t t w 5 x 4)) (evaluar-or '(or) '(nil nil t t w 5 x 4) '(x 1 y nil z 3))))
+  )
+)
+
+(deftest evaluar-or-2
+  (testing "evaluar-or con único elemento nil devuelve nil"
+    (is (= '(nil (nil nil t t w 5 x 4)) (evaluar-or '(or nil) '(nil nil t t w 5 x 4) '(x 1 y nil z 3))))
+  )
+)
+
+(deftest evaluar-or-3
+  (testing "evaluar-or con único elemento t devuelve "
+    (is (= '(t (nil nil t t w 5 x 4)) (evaluar-or '(or t) '(nil nil t t w 5 x 4) '(x 1 y nil z 3))))
+  )
+)
+
+(deftest evaluar-or-4
+  (testing "evaluar-or con único elemento clave existente en ambiente global devuelve valor asociado"
+    (is (= '(5 (nil nil t t w 5 x 4)) (evaluar-or '(or w) '(nil nil t t w 5 x 4) '(x 1 y nil z 3))))
+  )
+)
+(deftest evaluar-or-5
+  (testing "evaluar-or con único elemento clave inexistente devuelve error"
+    (is (= '((*error* unbound-symbol r) (nil nil t t w 5 x 4)) (evaluar-or '(or r) '(nil nil t t w 5 x 4) '(x 1 y nil z 3))))
+  )
+)
+
+(deftest evaluar-or-6
+  (testing "evaluar-or con único elemento clave existente en ambiente global devuelve valor asociado nil"
+    (is (= '(nil (nil nil t t w 5 x 4)) (evaluar-or '(or y) '(nil nil t t w 5 x 4) '(x 1 y nil z 3))))
+  )
+)
+
+(deftest evaluar-or-7
+  (testing "evaluar-or con único elemento dígito lo retorna"
+    (is (= '(6 (nil nil t t w 5 x 4)) (evaluar-or '(or 6) '(nil nil t t w 5 x 4) '(x 1 y nil z 3))))
+  )
+)
+
+(deftest evaluar-or-8
+  (testing "evaluar-or con nil y dígito retorna dígito"
+    (is (= '(6 (nil nil t t w 5 x 4)) (evaluar-or '(or nil 6) '(nil nil t t w 5 x 4) '(x 1 y nil z 3))))
+  )
+)
+
+(deftest evaluar-or-9
+  (testing "evaluar-or con primer elemento expresión con llamado a setq retorna primer elemento del resultado de evaluar la expresión"
+    (is (= '(8 (nil nil t t w 5 x 4 b 8)) (evaluar-or '(or (setq b 8) nil) '(nil nil t t w 5 x 4) '(x 1 y nil z 3))))
+  )
+)
+
+(deftest evaluar-or-10
+  (testing "evaluar-or con dos nil y un dígito retorna dígito"
+    (is (= '(6 (nil nil t t w 5 x 4)) (evaluar-or '(or nil 6 nil) '(nil nil t t w 5 x 4) '(x 1 y nil z 3))))
+  )
+)
+
+(deftest evaluar-or-11
+  (testing "evaluar-or con múltiples nil y expresión nil retorna dígito"
+    (is (= '(6 (nil nil t t w 5 x 4)) (evaluar-or '(or nil 6 r nil) '(nil nil t t w 5 x 4) '(x 1 y nil z 3))))
+  )
+)
+
+(deftest evaluar-or-12
+  (testing "evaluar-or con múltiples nil, expresión nil y t retorna t"
+    (is (= '(t (nil nil t t w 5 x 4)) (evaluar-or '(or nil t r nil) '(nil nil t t w 5 x 4) '(x 1 y nil z 3))))
+  )
+)
+
+(deftest evaluar-or-13
+  (testing "evaluar-or con múltiples nil retorna nil"
+    (is (= '(nil (nil nil t t w 5 x 4)) (evaluar-or '(or nil nil nil nil) '(nil nil t t w 5 x 4) '(x 1 y nil z 3))))
+  )
+)
