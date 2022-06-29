@@ -781,3 +781,47 @@
     (is (= (list 3 2 1) (fnc-reverse '((1 2 3)))))
   )
 )
+
+; tests de evaluar-escalar
+
+(deftest evaluar-escalar-recibe-digito-y-lo-devuelve
+  (testing "evaluar-escalar"
+    (is (= '(32 (v 1 w 3 x 6)) (evaluar-escalar 32 '(v 1 w 3 x 6) '(x 5 y 11 z "hola"))))
+  )
+)
+
+(deftest evaluar-escalar-recibe-string-y-lo-devuelve
+  (testing "evaluar-escalar"
+    (is (= '("chau" (v 1 w 3 x 6)) (evaluar-escalar "chau" '(v 1 w 3 x 6) '(x 5 y 11 z "hola"))))
+  )
+)
+
+(deftest evaluar-escalar-recibe-simbolo-y-devuelve-valor-asociado-en-ambiente-global
+  (testing "evaluar-escalar recibe un literal y devuelve valor asociado encontrado en ambiente global"
+    (is (= '("hola" (v 1 w 3 x 6)) (evaluar-escalar 'z '(v 1 w 3 x 6) '(x 5 y 11 z "hola"))))
+  )
+)
+
+(deftest evaluar-escalar-recibe-simbolo-en-mayuscula-y-devuelve-valor-asociado-en-ambiente-global
+  (testing "evaluar-escalar recibe un literal en mayúscula y devuelve valor asociado en ambiente global ignorando case"
+     (is (= '("hola" (v 1 w 3 x 6)) (evaluar-escalar 'Z '(v 1 w 3 x 6) '(x 5 y 11 z "hola"))))
+  )
+)
+
+(deftest evaluar-escalar-recibe-simbolo-y-devuelve-valor-asociado-en-ambiente-local
+  (testing "evaluar-escalar"
+    (is (= '(3 (v 1 w 3 x 6)) (evaluar-escalar 'w '(v 1 w 3 x 6) '(x 5 y 11 z "hola"))))
+  )
+)
+
+(deftest evaluar-escalar-recibe-simbolo-presente-en-ambos-ambientes-y-devuelve-valor-asociado-en-ambiente-global
+  (testing "evaluar-escalar"
+    (is (= '(5 (v 1 w 3 x 6)) (evaluar-escalar 'X '(v 1 w 3 x 6) '(x 5 y 11 z "hola"))))
+  )
+)
+
+(deftest evaluar-escalar-recibe-simbolo-inexistente-en-ambos-ambientes-y-devuelve-error
+  (testing "evaluar-escalar"
+    (is (= '((*error* unbound-symbol n) (v 1 w 3 x 6)) (evaluar-escalar 'n '(v 1 w 3 x 6) '(x 5 y 11 z "hola"))))
+  )
+)

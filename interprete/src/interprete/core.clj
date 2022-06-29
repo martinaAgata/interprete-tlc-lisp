@@ -380,15 +380,13 @@
 ; (*error* too-many-args)
 ; user=> (controlar-aridad '(a b c) 4)
 ; (*error* too-few-args)
-(defn controlar-aridad
+(defn controlar-aridad [lista longitud]
   "Si la longitud de una lista dada es la esperada, devuelve esa longitud.
    Si no, devuelve una lista con un mensaje de error (una lista con *error* como primer elemento)."
-   ([lista longitud]
-        (cond
-            (= (count lista) longitud) longitud
-            (> (count lista) longitud) (list '*error* 'too-many-args)
-            (< (count lista) longitud) (list '*error* 'too-few-args)
-        )
+   (cond
+        (= (count lista) longitud) longitud
+        (> (count lista) longitud) (list '*error* 'too-many-args)
+        (< (count lista) longitud) (list '*error* 'too-few-args)
     )
 )
 
@@ -435,23 +433,19 @@
 ; false
 ; user=> (igual? 'a "A")
 ; false
-(defn lowercase_si
+(defn lowercase_si [a]
     "Función auxiliar que retorna null si el elemento es 'NIL o (), al elemento convertido
     a lowercase si es un símbolo o lista o, en caso contrario, al elemento tal como se lo recibió."
-    ([a]
-        (cond
-            (or (= 'NIL a) (= () a)) nil
-            (or (symbol? a) (list? a)) (lower-case a)
-            :else a
-        )
+    (cond
+        (or (= 'NIL a) (= () a)) nil
+        (or (symbol? a) (list? a)) (lower-case a)
+        :else a
     )
 )
 
-(defn igual?
+(defn igual? [simbolo-a simbolo-b]
     "Verifica la igualdad entre dos elementos al estilo de TLC-LISP (case-insensitive)."
-    ([simbolo-a simbolo-b]
-        (= (lowercase_si simbolo-a) (lowercase_si simbolo-b))
-    )
+    (= (lowercase_si simbolo-a) (lowercase_si simbolo-b))
 )
 
 
@@ -473,15 +467,13 @@
 ; false
 ; user=> (error? nil)
 ; false
-(defn error?
+(defn error? [listado_error]
     "Devuelve true o false, segun sea o no el arg. un mensaje de error (una lista con *error* como primer elemento)."
-    ([listado_error]
-        (cond
-            (not (list? listado_error)) false
-            (or (or (= listado_error nil) (= listado_error ())) (= (count listado_error) 0)) false
-            (igual? (str "*error*") (first listado_error)) true
-            :else false
-        )
+    (cond
+        (not (list? listado_error)) false
+        (or (or (= listado_error nil) (= listado_error ())) (= (count listado_error) 0)) false
+        (igual? (str "*error*") (first listado_error)) true
+        :else false
     )
 )
 
@@ -496,13 +488,11 @@
 ; nil
 ; user=> (revisar-fnc ())
 ; nil
-(defn revisar-fnc
+(defn revisar-fnc [lista]
     "Si la lista es un mensaje de error, lo devuelve; si no, devuelve nil."
-    ([lista]
-        (cond
-            (error? lista) lista
-            :else nil
-        )
+    (cond
+        (error? lista) lista
+        :else nil
     )
 )
 
@@ -517,13 +507,11 @@
 ; (*error* too-few-args)
 ; user=> (revisar-lae '(1 (*error* too-few-args) (*error* too-many-args) 3))
 ; (*error* too-few-args)
-(defn revisar-lae
+(defn revisar-lae [lista]
     "Devuelve el primer elemento que es un mensaje de error. Si no hay ninguno, devuelve nil."
-    ([lista]
-        (cond
-            (or (= lista nil) (= lista ())) nil
-            :else (first (filter error? lista))
-        )
+    (cond
+        (or (= lista nil) (= lista ())) nil
+        :else (first (filter error? lista))
     )
 )
 
@@ -541,17 +529,15 @@
     (concat (take i lista) (list nuevo_valor) (nthnext lista (inc i)))
 )
 
-(defn actualizar-amb
+(defn actualizar-amb [ambiente clave nuevo_valor]
     "Devuelve un ambiente actualizado con una clave (nombre de la variable o funcion) y su valor.
-    Si el valor es un error, el ambiente no se modifica. De lo contrario, se le carga o reemplaza el valor."
-    ([ambiente clave nuevo_valor]
-        (let [indice (.indexOf ambiente (symbol (lower-case clave)))]
-            (cond
-                (and (= indice -1) (= (count ambiente) 0)) (list clave nuevo_valor)
-                (= indice -1) (concat ambiente (list (symbol (lower-case clave)) nuevo_valor))
-                (error? nuevo_valor) ambiente
-                :else (reemplazar-en-indice ambiente (inc (.indexOf ambiente (symbol (lower-case clave)))) nuevo_valor)
-            )
+     Si el valor es un error, el ambiente no se modifica. De lo contrario, se le carga o reemplaza el valor."
+    (let [indice (.indexOf ambiente (symbol (lower-case clave)))]
+        (cond
+            (and (= indice -1) (= (count ambiente) 0)) (list clave nuevo_valor)
+            (= indice -1) (concat ambiente (list (symbol (lower-case clave)) nuevo_valor))
+            (error? nuevo_valor) ambiente
+            :else (reemplazar-en-indice ambiente (inc (.indexOf ambiente (symbol (lower-case clave)))) nuevo_valor)
         )
     )
 )
@@ -561,15 +547,13 @@
 ; 3
 ; user=> (buscar 'f '(a 1 b 2 c 3 d 4 e 5))
 ; (*error* unbound-symbol f)
-(defn buscar
+(defn buscar [clave ambiente]
     "Busca una clave en un ambiente (una lista con claves en las posiciones impares [1, 3, 5...] y valores en las pares [2, 4, 6...]
-    y devuelve el valor asociado. Devuelve un mensaje de error si no la encuentra."
-    ([clave ambiente]
-        (let [indice (.indexOf ambiente (symbol (lower-case clave)))]
-            (cond
-                (= indice -1) (list '*error* 'unbound-symbol clave)
-                :else (nth ambiente (inc indice))
-            )
+     y devuelve el valor asociado. Devuelve un mensaje de error si no la encuentra."
+    (let [indice (.indexOf ambiente (symbol (lower-case clave)))]
+        (cond
+            (= indice -1) (list '*error* 'unbound-symbol clave)
+            :else (nth ambiente (inc indice))
         )
     )
 )
@@ -609,15 +593,13 @@
     )
 )
 
-(defn fnc-append
+(defn fnc-append [lista]
     "Devuelve el resultado de fusionar 2 sublistas."
-    ([lista]
-        (cond
-            (seq? (controlar-aridad lista 2)) (controlar-aridad lista 2)
-            (and (empty-or-nil? (first lista)) (empty-or-nil? (second lista))) nil
-            (or (append-not-seq? lista) (append-not-seq? (reverse lista))) (list '*error* 'list 'expected (second lista))
-            :else (concat (first lista) (second lista))
-        )
+    (cond
+        (seq? (controlar-aridad lista 2)) (controlar-aridad lista 2)
+        (and (empty-or-nil? (first lista)) (empty-or-nil? (second lista))) nil
+        (or (append-not-seq? lista) (append-not-seq? (reverse lista))) (list '*error* 'list 'expected (second lista))
+        :else (concat (first lista) (second lista))
     )
 )
 
@@ -626,13 +608,11 @@
 ; (a 1 b 2 c 3 d 4)
 ; user=> (fnc-env '(5) '(a 1 b 2) '(c 3 d 4))
 ; (*error* too-many-args)
-(defn fnc-env
+(defn fnc-env [lista ambiente-1 ambiente-2]
     "Devuelve la fusion de los ambientes global y local."
-    ([lista ambiente-1 ambiente-2]
-        (cond
-            (not (empty? lista)) (list '*error* 'too-many-args)
-            :else (concat ambiente-1 ambiente-2)
-        )
+    (cond
+        (not (empty? lista)) (list '*error* 'too-many-args)
+        :else (concat ambiente-1 ambiente-2)
     )
 )
 
@@ -657,15 +637,13 @@
 ; (*error* too-few-args)
 ; user=> (fnc-equal '(A a A))
 ; (*error* too-many-args)
-(defn fnc-equal
+(defn fnc-equal [lista]
     "Compara 2 elementos. Si son iguales, devuelve t. Si no, nil."
-    ([lista]
-        (let [aridad (controlar-aridad lista 2)]
-            (cond
-                (error? aridad) aridad
-                (igual? (first lista) (second lista)) 't
-                :else nil
-            )
+    (let [aridad (controlar-aridad lista 2)]
+        (cond
+            (error? aridad) aridad
+            (igual? (first lista) (second lista)) 't
+            :else nil
         )
     )
 )
@@ -697,15 +675,13 @@
 ; (*error* not-implemented)
 ; user=> (fnc-read '(1 2))
 ; (*error* not-implemented)
-(defn fnc-read
+(defn fnc-read [elemento]
     "Devuelve la lectura de un elemento de TLC-LISP desde la terminal/consola."
-    ([elemento]
-        (let [stream (read)]
-            (cond
-                (error? (controlar-aridad elemento 0)) (list '*error* 'not-implemented)
-                (or (= stream ()) (= stream nil)) nil
-                :else stream
-            )
+    (let [stream (read)]
+        (cond
+            (error? (controlar-aridad elemento 0)) (list '*error* 'not-implemented)
+            (or (= stream ()) (= stream nil)) nil
+            :else stream
         )
     )
 )
@@ -718,13 +694,11 @@
 ; (*error* not-implemented)
 ; user=> (fnc-terpri '(1 2))
 ; (*error* not-implemented)
-(defn fnc-terpri
+(defn fnc-terpri [lista]
     "Imprime un salto de línea y devuelve nil."
-    ([lista]
-        (cond
-            (error? (controlar-aridad lista 0)) (list '*error* 'not-implemented)
-            :else (println)
-        )
+    (cond
+        (error? (controlar-aridad lista 0)) (list '*error* 'not-implemented)
+        :else (println)
     )
 )
 
@@ -745,14 +719,12 @@
 ; (*error* number-expected A)
 ; user=> (fnc-add '(3 4 A 6))
 ; (*error* number-expected A)
-(defn fnc-add
+(defn fnc-add [lista]
     "Suma los elementos de una lista. Minimo 2 elementos."
-    ([lista]
-        (cond
-            (< (count lista) 2) (list '*error* 'too-few-args)
-            (every? number? lista) (reduce + lista)
-            :else (list '*error* 'number-expected (first (filter (complement number?) lista)))
-        )
+    (cond
+        (< (count lista) 2) (list '*error* 'too-few-args)
+        (every? number? lista) (reduce + lista)
+        :else (list '*error* 'number-expected (first (filter (complement number?) lista)))
     )
 )
 
@@ -773,15 +745,13 @@
 ; (*error* number-expected A)
 ; user=> (fnc-sub '(3 4 A 6))
 ; (*error* number-expected A)
-(defn fnc-sub
+(defn fnc-sub [lista]
     "Resta los elementos de un lista. Minimo 1 elemento."
-    ([lista]
-        (cond
-            (< (count lista) 1) (list '*error* 'too-few-args)
-            (not-every? number? lista) (list '*error* 'number-expected (first (filter (complement number?) lista)))
-            (= (count lista) 1) (- (first lista))
-            :else (reduce - lista)
-        )
+    (cond
+        (< (count lista) 1) (list '*error* 'too-few-args)
+        (not-every? number? lista) (list '*error* 'number-expected (first (filter (complement number?) lista)))
+        (= (count lista) 1) (- (first lista))
+        :else (reduce - lista)
     )
 )
 
@@ -802,16 +772,14 @@
 ; (*error* number-expected A)
 ; user=> (fnc-lt '(1 2 3))
 ; (*error* too-many-args)
-(defn fnc-lt
+(defn fnc-lt [lista]
     "Devuelve t si el primer numero es menor que el segundo; si no, nil."
-    ([lista]
-        (let [aridad (controlar-aridad lista 2)]
-            (cond
-                (error? aridad) aridad
-                (not-every? number? lista) (list '*error* 'number-expected (first (filter (complement number?) lista)))
-                (< (first lista) (second lista)) 't
-                :else nil
-            )
+    (let [aridad (controlar-aridad lista 2)]
+        (cond
+            (error? aridad) aridad
+            (not-every? number? lista) (list '*error* 'number-expected (first (filter (complement number?) lista)))
+            (< (first lista) (second lista)) 't
+            :else nil
         )
     )
 )
@@ -833,16 +801,14 @@
 ; (*error* number-expected A)
 ; user=> (fnc-gt '(1 2 3))
 ; (*error* too-many-args)
-(defn fnc-gt
+(defn fnc-gt [lista]
     "Devuelve t si el primer numero es mayor que el segundo; si no, nil."
-    ([lista]
-        (let [aridad (controlar-aridad lista 2)]
-            (cond
-                (error? aridad) aridad
-                (not-every? number? lista) (list '*error* 'number-expected (first (filter (complement number?) lista)))
-                (> (first lista) (second lista)) 't
-                :else nil
-            )
+    (let [aridad (controlar-aridad lista 2)]
+        (cond
+            (error? aridad) aridad
+            (not-every? number? lista) (list '*error* 'number-expected (first (filter (complement number?) lista)))
+            (> (first lista) (second lista)) 't
+            :else nil
         )
     )
 )
@@ -864,16 +830,14 @@
 ; (*error* number-expected A)
 ; user=> (fnc-ge '(1 2 3))
 ; (*error* too-many-args)
-(defn fnc-ge
+(defn fnc-ge [lista]
     "Devuelve t si el primer numero es mayor o igual que el segundo; si no, nil."
-    ([lista]
-        (let [aridad (controlar-aridad lista 2)]
-            (cond
-                (error? aridad) aridad
-                (not-every? number? lista) (list '*error* 'number-expected (first (filter (complement number?) lista)))
-                (>= (first lista) (second lista)) 't
-                :else nil
-            )
+    (let [aridad (controlar-aridad lista 2)]
+        (cond
+            (error? aridad) aridad
+            (not-every? number? lista) (list '*error* 'number-expected (first (filter (complement number?) lista)))
+            (>= (first lista) (second lista)) 't
+            :else nil
         )
     )
 )
@@ -891,39 +855,41 @@
 ; (3 2 1)
 ; user=> (fnc-reverse '((1 2 3)(4)) )
 ; (*error* too-many-args)
-(defn fnc-reverse
+(defn fnc-reverse [lista]
     "Devuelve una lista con sus elementos en orden inverso."
-    ([lista]
-        (let [aridad (controlar-aridad lista 1)]
-            (cond
-                (error? aridad) aridad
-                (not (seq? (first lista))) (list '*error* 'list 'expected (first lista))
-                :else (reverse (first lista))
-            )
+    (let [aridad (controlar-aridad lista 1)]
+        (cond
+            (error? aridad) aridad
+            (not (seq? (first lista))) (list '*error* 'list 'expected (first lista))
+            :else (reverse (first lista))
         )
     )
 )
 
 
-; ; user=> (evaluar-escalar 32 '(v 1 w 3 x 6) '(x 5 y 11 z "hola"))
-; ; (32 (v 1 w 3 x 6))
-; ; user=> (evaluar-escalar "chau" '(v 1 w 3 x 6) '(x 5 y 11 z "hola"))
-; ; ("chau" (v 1 w 3 x 6))
-; ; user=> (evaluar-escalar 'z '(v 1 w 3 x 6) '(x 5 y 11 z "hola"))
-; ; ("hola" (v 1 w 3 x 6))
-; ; user=> (evaluar-escalar 'Z '(v 1 w 3 x 6) '(x 5 y 11 z "hola"))
-; ; ("hola" (v 1 w 3 x 6))
-; ; user=> (evaluar-escalar 'w '(v 1 w 3 x 6) '(x 5 y 11 z "hola"))
-; ; (3 (v 1 w 3 x 6))
-; ; user=> (evaluar-escalar 'x '(v 1 w 3 x 6) '(x 5 y 11 z "hola"))
-; ; (5 (v 1 w 3 x 6))
-; ; user=> (evaluar-escalar 'n '(v 1 w 3 x 6) '(x 5 y 11 z "hola"))
-; ; ((*error* unbound-symbol n) (v 1 w 3 x 6))
-; (defn evaluar-escalar
-;   "Evalua una expresion escalar consultando, si corresponde, los ambientes local y global. Devuelve una lista con el resultado y un ambiente."
-; )
-;
-;
+; user=> (evaluar-escalar 32 '(v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; (32 (v 1 w 3 x 6))
+; user=> (evaluar-escalar "chau" '(v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; ("chau" (v 1 w 3 x 6))
+; user=> (evaluar-escalar 'z '(v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; ("hola" (v 1 w 3 x 6))
+; user=> (evaluar-escalar 'Z '(v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; ("hola" (v 1 w 3 x 6))
+; user=> (evaluar-escalar 'w '(v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; (3 (v 1 w 3 x 6))
+; user=> (evaluar-escalar 'x '(v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; (5 (v 1 w 3 x 6))
+; user=> (evaluar-escalar 'n '(v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; ((*error* unbound-symbol n) (v 1 w 3 x 6))
+(defn evaluar-escalar [escalar amb-local amb-global]
+    "Evalua una expresion escalar consultando, si corresponde, los ambientes local y global. Devuelve una lista con el resultado y un ambiente."
+    (cond
+        (not (symbol? escalar)) (list escalar amb-local)
+        :else (list (buscar escalar (fnc-append (list amb-global amb-local))) amb-local)
+    )
+)
+
+
 ; ; user=> (evaluar-de '(de f (x)) '(x 1))
 ; ; (f (x 1 f (lambda (x))))
 ; ; user=> (evaluar-de '(de f (x) 2) '(x 1))
