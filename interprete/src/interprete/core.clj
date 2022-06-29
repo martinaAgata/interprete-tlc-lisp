@@ -111,9 +111,17 @@
       (cond
         (not (seq? expre))             (evaluar-escalar expre amb-global amb-local)
 
-        (igual? (first expre) 'cond)   (evaluar-cond expre amb-global amb-local)
-        (igual? (first expre) 'de)     (evaluar-de expre amb-global)
-
+        (igual? (first expre) 'de)       (evaluar-de expre amb-global)
+        (igual? (first expre) 'if)       (evaluar-if expre amb-global amb-local)
+        (igual? (first expre) 'or)       (evaluar-or expre amb-global amb-local)
+        (igual? (first expre) 'cond)     (evaluar-cond expre amb-global amb-local)
+        (igual? (first expre) 'eval)     (evaluar-eval expre amb-global amb-local)
+        (igual? (first expre) 'exit)     (evaluar-exit expre amb-global amb-local)
+        (igual? (first expre) 'load)     (evaluar-load expre amb-global amb-local)
+        (igual? (first expre) 'setq)     (evaluar-setq expre amb-global amb-local)
+        (igual? (first expre) 'quote)    (evaluar-quote expre amb-global amb-local)
+        (igual? (first expre) 'lambda)   (evaluar-lambda expre amb-global amb-local)
+        (igual? (first expre) 'escalar)  (evaluar-escalar expre amb-global amb-local)
          ;
          ;
          ;
@@ -261,7 +269,26 @@
   "Aplica una funcion primitiva a una 'lae' (lista de argumentos evaluados)."
   [fnc lae amb-global amb-local]
   (cond
-    (igual? fnc 'add)     (fnc-add lae)
+    (igual? fnc 'gt)       (fnc-gt lae)
+    (igual? fnc 'ge)       (fnc-ge lae)
+    (igual? fnc 'lt)       (fnc-lt lae)
+    (igual? fnc 'add)      (fnc-add lae)
+    (igual? fnc 'env)      (fnc-env lae amb-global amb-local)
+    (igual? fnc 'not)      (fnc-not lae)
+    (igual? fnc 'sub)      (fnc-sub lae)
+    (igual? fnc 'cons)     (fnc-cons lae)
+    (igual? fnc 'list)     (fnc-list lae)
+    (igual? fnc 'null)     (fnc-null lae)
+    (igual? fnc 'read)     (fnc-read lae)
+    (igual? fnc 'rest)     (fnc-rest lae)
+    (igual? fnc 'equal)    (fnc-equal lae)
+    (igual? fnc 'first)    (fnc-first lae)
+    (igual? fnc 'listp)    (fnc-listp lae)
+    (igual? fnc 'prin3)    (fnc-prin3 lae)
+    (igual? fnc 'append)   (fnc-append lae)
+    (igual? fnc 'length)   (fnc-length lae)
+    (igual? fnc 'terpri)   (fnc-terpri lae)
+    (igual? fnc 'reverse)  (fnc-reverse lae)
 
     ; Las funciones primitivas reciben argumentos y retornan un valor (son puras)
 
@@ -929,45 +956,59 @@
 )
 
 
-; ; user=> (evaluar-if '(if t) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
-; ; (nil (nil nil t t v 1 w 3 x 6))
-; ; user=> (evaluar-if '(if 7) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
-; ; (nil (nil nil t t v 1 w 3 x 6))
-; ; user=> (evaluar-if '(if nil) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
-; ; (nil (nil nil t t v 1 w 3 x 6))
-; ; user=> (evaluar-if '(if x) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
-; ; (nil (nil nil t t v 1 w 3 x 6))
-; ; user=> (evaluar-if '(if t 9) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
-; ; (9 (nil nil t t v 1 w 3 x 6))
-; ; user=> (evaluar-if '(if z 9) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
-; ; (9 (nil nil t t v 1 w 3 x 6))
-; ; user=> (evaluar-if '(if w 9) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
-; ; (9 (nil nil t t v 1 w 3 x 6))
-; ; user=> (evaluar-if '(if r 9) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
-; ; ((*error* unbound-symbol r) (nil nil t t v 1 w 3 x 6))
-; ; user=> (evaluar-if '(if nil 9) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
-; ; (nil (nil nil t t v 1 w 3 x 6))
-; ; user=> (evaluar-if '(if nil 9 z) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
-; ; ("hola" (nil nil t t v 1 w 3 x 6))
-; ; user=> (evaluar-if '(if nil 9 1 2 3 z) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
-; ; ("hola" (nil nil t t v 1 w 3 x 6))
-; ; user=> (evaluar-if '(if nil 9 w) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
-; ; (3 (nil nil t t v 1 w 3 x 6))
-; ; user=> (evaluar-if '(if nil 9 8) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
-; ; (8 (nil nil t t v 1 w 3 x 6))
-; ; user=> (evaluar-if '(if nil a 8) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
-; ; (8 (nil nil t t v 1 w 3 x 6))
-; ; user=> (evaluar-if '(if (gt 2 0) a 8) '(gt gt nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
-; ; ((*error* unbound-symbol a) (gt gt nil nil t t v 1 w 3 x 6))
-; ; user=> (evaluar-if '(if (gt 0 2) a 8) '(gt gt nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
-; ; (8 (gt gt nil nil t t v 1 w 3 x 6))
-; ; user=> (evaluar-if '(if (gt 0 2) a (setq m 8)) '(gt gt nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
-; ; (8 (gt gt nil nil t t v 1 w 3 x 6 m 8))
-; (defn evaluar-if
-;   "Evalua una forma 'if'. Devuelve una lista con el resultado y un ambiente eventualmente modificado."
-; )
-;
-;
+; user=> (evaluar-if '(if t) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; (nil (nil nil t t v 1 w 3 x 6))
+; user=> (evaluar-if '(if 7) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; (nil (nil nil t t v 1 w 3 x 6))
+; user=> (evaluar-if '(if nil) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; (nil (nil nil t t v 1 w 3 x 6))
+; user=> (evaluar-if '(if x) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; (nil (nil nil t t v 1 w 3 x 6))
+; user=> (evaluar-if '(if t 9) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; (9 (nil nil t t v 1 w 3 x 6))
+; user=> (evaluar-if '(if z 9) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; (9 (nil nil t t v 1 w 3 x 6))
+; user=> (evaluar-if '(if w 9) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; (9 (nil nil t t v 1 w 3 x 6))
+; user=> (evaluar-if '(if r 9) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; ((*error* unbound-symbol r) (nil nil t t v 1 w 3 x 6))
+; user=> (evaluar-if '(if nil 9) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; (nil (nil nil t t v 1 w 3 x 6))
+; user=> (evaluar-if '(if nil 9 z) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; ("hola" (nil nil t t v 1 w 3 x 6))
+; user=> (evaluar-if '(if nil 9 1 2 3 z) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; ("hola" (nil nil t t v 1 w 3 x 6))
+; user=> (evaluar-if '(if nil 9 w) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; (3 (nil nil t t v 1 w 3 x 6))
+; user=> (evaluar-if '(if nil 9 8) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; (8 (nil nil t t v 1 w 3 x 6))
+; user=> (evaluar-if '(if nil a 8) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; (8 (nil nil t t v 1 w 3 x 6))
+; user=> (evaluar-if '(if (gt 2 0) a 8) '(gt gt nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; ((*error* unbound-symbol a) (gt gt nil nil t t v 1 w 3 x 6))
+; user=> (evaluar-if '(if (gt 0 2) a 8) '(gt gt nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; (8 (gt gt nil nil t t v 1 w 3 x 6))
+; user=> (evaluar-if '(if (gt 0 2) a (setq m 8)) '(gt gt nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; (8 (gt gt nil nil t t v 1 w 3 x 6 m 8))
+;evaluar: "Evalua una expresion 'expre' en los ambientes global y local. Devuelve un lista con un valor resultante y un ambiente."
+;parametros de evaluar: [expre amb-global amb-local]
+(defn evaluar-if [forma amb-global amb-local]
+    "Evalua una forma 'if'. Devuelve una lista con el resultado y un ambiente eventualmente modificado."
+    (let [longitud-forma (count forma)]
+        (let [resultado (evaluar (second forma) amb-global amb-local)]
+            (cond
+                ; (not (seq? expre))
+                (and (igual? longitud-forma 2)) (evaluar nil amb-global amb-local) ; si longitud de forma-if es 2
+                (and (igual? longitud-forma 3) (nil? (second forma))) (evaluar nil amb-global amb-local) ; si longitud es 3 y el segundo elemento es nil
+                (error? (first resultado)) resultado ; si la expresion es nil, () o error, evaluar la devuelve intacta junto con el ambiente global (igual que lo que pide esta función)
+                (first resultado) (evaluar (nth forma 2) amb-global amb-local) ; si resultado de evaluación de segundo elemento es nil, entonces evaluar cuarto elemento
+                :else (evaluar (last forma) amb-global amb-local) ; si es true, evaluar tercer elemento
+            )
+        )
+    )
+)
+
+
 ; ; user=> (evaluar-or '(or) '(nil nil t t w 5 x 4) '(x 1 y nil z 3))
 ; ; (nil (nil nil t t w 5 x 4))
 ; ; user=> (evaluar-or '(or nil) '(nil nil t t w 5 x 4) '(x 1 y nil z 3))

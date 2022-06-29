@@ -905,3 +905,111 @@
     (is (= '((*error* cannot-set nil) (x 1)) (evaluar-de '(de nil (x) 2) '(x 1))))
   )
 )
+
+; tests de evaluar-if
+
+; importante: en los mensajes de testing sólo se aclara lo que se retorna como primer elemento
+; del resultado ya que el segundo elemento es siempre el ambiente actualizado.
+
+(deftest evaluar-if-1
+  (testing "evaluar-if con único elemento t retorna nil"
+    (is (= '(nil (nil nil t t v 1 w 3 x 6)) (evaluar-if '(if t) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))))
+  )
+)
+
+(deftest evaluar-if-2
+  (testing "evaluar-if con único elemento dígito retorna nil"
+ (is (= '(nil (nil nil t t v 1 w 3 x 6)) (evaluar-if '(if 7) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))))
+  )
+)
+
+(deftest evaluar-if-3
+  (testing "evaluar-if con único elemento nil"
+(is (= '(nil (nil nil t t v 1 w 3 x 6)) (evaluar-if '(if nil) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))))
+  )
+)
+
+(deftest evaluar-if-4
+  (testing "evaluar-if con único elemento clave existente retorna nil"
+(is (= '(nil (nil nil t t v 1 w 3 x 6)) (evaluar-if '(if x) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))))
+  )
+)
+
+(deftest evaluar-if-5
+  (testing "evaluar-if con dos elementos (clave t existente en ambiente global y un valor) retorna el valor recibido"
+    (is (= '(9 (nil nil t t v 1 w 3 x 6)) (evaluar-if '(if t 9) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))))
+  )
+)
+
+(deftest evaluar-if-6
+  (testing "evaluar-if con dos elementos (clave z existente en ambiente local y un valor) retorna el valor recibido"
+    (is (= '(9 (nil nil t t v 1 w 3 x 6)) (evaluar-if '(if z 9) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))))
+  )
+)
+
+(deftest evaluar-if-7
+  (testing "evaluar-if con dos elementos (clave w existente en ambiente global y un valor) retorna el valor recibido"
+    (is (= '(9 (nil nil t t v 1 w 3 x 6)) (evaluar-if '(if w 9) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))))
+  )
+)
+
+(deftest evaluar-if-8
+  (testing "evaluar-if con dos elementos (clave inexistente) retorna error"
+    (is (= '((*error* unbound-symbol r) (nil nil t t v 1 w 3 x 6)) (evaluar-if '(if r 9) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))))
+  )
+)
+
+(deftest evaluar-if-9
+  (testing "evaluar-if con dos elementos y primer elemento nil retorna nil"
+    (is (= '(nil (nil nil t t v 1 w 3 x 6)) (evaluar-if '(if nil 9) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))))
+  )
+)
+
+(deftest evaluar-if-10
+  (testing "evaluar-if con tres elementos y primer elemento nil retorna valor asociado a última clave existente en ambiente local"
+    (is (= '("hola" (nil nil t t v 1 w 3 x 6)) (evaluar-if '(if nil 9 z) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))))
+  )
+)
+
+(deftest evaluar-if-11
+  (testing "evaluar-if con seis elementos y primer elemento nil retorna valor asociado a última clave existente en ambiente local"
+    (is (= '("hola" (nil nil t t v 1 w 3 x 6)) (evaluar-if '(if nil 9 1 2 3 z) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))))
+  )
+)
+
+(deftest evaluar-if-12
+  (testing "evaluar-if con tres elementos y primer elemento nil retorna valor asociado a ultima clave existente en ambiente global"
+    (is (= '(3 (nil nil t t v 1 w 3 x 6)) (evaluar-if '(if nil 9 w) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))))
+  )
+)
+
+(deftest evaluar-if-13
+  (testing "evaluar-if con tres elementos y primer elemento nil retorna último elemento"
+    (is (= '(8 (nil nil t t v 1 w 3 x 6)) (evaluar-if '(if nil 9 8) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))))
+  )
+)
+
+(deftest evaluar-if-14
+  (testing "evaluar-if con tres elementos y primer elemento nil retorna último elemento"
+    (is (= '((8 (nil nil t t v 1 w 3 x 6)) (evaluar-if '(if nil a 8) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola")))))
+  )
+)
+
+(deftest evaluar-if-15
+  (testing "evaluar-if con tres elementos y primer elemento condición true retorna error por clave desconocida a"
+    (is (= '((*error* unbound-symbol a) (gt gt nil nil t t v 1 w 3 x 6)) (evaluar-if '(if (gt 2 0) a 8) '(gt gt nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"
+    ))))
+  )
+)
+
+(deftest evaluar-if-16
+  (testing "evaluar-if con tres elementos y primer elemento condición nil retorna último elemento"
+    (is (= '(8 (gt gt nil nil t t v 1 w 3 x 6)) (evaluar-if '(if (gt 0 2) a 8) '(gt gt nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))))
+  )
+)
+
+(deftest evaluar-if-17
+  (testing "evaluar-if con tres elementos y primer elemento condición nil retorna primer elemento del resultado de evaluar la expresión del último resultado"
+    (is (= '(8 (gt gt nil nil t t v 1 w 3 x 6 m 8)) (evaluar-if '(if (gt 0 2) a (setq m 8)) '(gt gt nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))))
+  )
+)
