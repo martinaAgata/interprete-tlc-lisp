@@ -113,6 +113,9 @@
   (testing "revisar-fnc devuelve nil al recibir nil"
     (is (= nil (revisar-fnc nil)))
   )
+  (testing "revisar-fnc devuelve nil al recibir nil literal"
+    (is (= nil (revisar-fnc 'nil)))
+  )
   (testing "revisar-fnc devuelve nil al recibir una lista vacía"
     (is (= nil (revisar-fnc ())))
   )
@@ -126,6 +129,9 @@
   )
   (testing "revisar-lae devuelve nil cuando recibe nil"
     (is (= nil (revisar-lae nil)))
+  )
+  (testing "revisar-lae devuelve nil cuando recibe nil liteal"
+    (is (= nil (revisar-lae 'NIL)))
   )
   (testing "revisar-lae devuelve nil cuando recibe una lista vacía"
     (is (= nil (revisar-lae ())))
@@ -172,6 +178,9 @@
   )
   (testing "buscar una clave existente en mayúscula devuelve un valor asociado a la misma clave en minúscula"
     (is (= 3 (buscar 'C '(a 1 b 2 c 3 d 4 e 5))))
+  )
+  (testing "buscar una clave existente en minúscula (cuando en el ambiente está en mayúscula) devuelve error"
+    (is (= (list '*error* 'unbound-symbol 'c) (buscar 'c '(a 1 b 2 C 3 d 4 e 5))))
   )
   (testing "buscar una clave existente devuelve un valor asociado lista"
     (is (= '(1 2 3) (buscar 'a '(a (1 2 3) b 2 c 3 d 4 e 5))))

@@ -939,7 +939,7 @@
 (defn nested-map [f secuencia]
     "Retorna la secuencia resultante de aplicar f a cada nivel de la secuencia recibida."
     (cond
-        (empty? secuencia) nil
+        (empty? secuencia) secuencia
         (seq? (first secuencia)) (cons (nested-map f (first secuencia)) (nested-map f (rest secuencia)))
         :else (cons (f (first secuencia)) (nested-map f (rest secuencia)))
     )
@@ -955,13 +955,19 @@
     )
 )
 
-(defn evaluar-de [funcion ambiente]
-    (let [funcion (nested-map lower-case-symbol funcion) ambiente (nested-map lower-case-symbol ambiente)]
+(defn evaluar-de [funcion ambiente] ; ejemplo: (FUNCION '(de f (x) 2) AMBIENTE '(x 1))
+    (let [funcion (nested-map lower-case-symbol funcion)
+          ambiente (nested-map lower-case-symbol ambiente) ; '(x 1)
+          de (first funcion) ; de
+          nombre (second funcion) ; f
+          parametros (second (rest funcion)) ; '(x)
+          resto (rest (rest funcion))
+         ]
         (cond
-            (not (seq? (second (rest funcion)))) (list (list '*error* 'list 'expected (second (rest funcion))) ambiente)
-            (igual? nil (second funcion)) (list (list '*error* 'cannot-set (second funcion)) ambiente)
-            (not (symbol? (second funcion))) (list (list '*error* 'symbol 'expected (second funcion)) ambiente)
-            :else (list (second funcion) (actualizar-amb ambiente (second funcion) (concat '(lambda) (rest (rest funcion)))))
+            (not (seq? parametros)) (list (list '*error* 'list 'expected parametros) ambiente)
+            (igual? nil nombre) (list (list '*error* 'cannot-set nombre) ambiente)
+            (not (symbol? nombre)) (list (list '*error* 'symbol 'expected nombre) ambiente)
+            :else (list nombre (actualizar-amb ambiente nombre (concat '(lambda) resto)))
         )
     )
 )
