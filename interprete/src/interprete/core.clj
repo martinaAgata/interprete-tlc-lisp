@@ -133,7 +133,7 @@
 
         :else (let [res-eval-1 (evaluar (first expre) amb-global amb-local),
 				                res-eval-2 (reduce (fn [x y] (let [res-eval-3 (evaluar y (first x) amb-local)] (cons (second res-eval-3) (concat (next x) (list (first res-eval-3)))))) (cons (list (second res-eval-1)) (next expre)))]
-				               (aplicar (first res-eval-1) (next res-eval-2) (first res-eval-2) amb-local)))))
+				                (aplicar (first res-eval-1) (next res-eval-2) (first res-eval-2) amb-local)))))
 
 
 ; Evalua una macro COND. Siempre devuelve una lista con un resultado y un ambiente.
@@ -253,8 +253,12 @@
 (defn aplicar-lambda-simple
   "Evalua una forma lambda 'fnc' con un cuerpo simple."
   [fnc lae amb-global amb-local]
-  (evaluar (first (nnext fnc)) amb-global (concat (reduce concat (map list (second fnc) lae)) amb-local)))
-
+  (let [lista-params-args (reduce concat (map list (second fnc) lae)),
+        nuevo-amb-local (cond
+                          (empty? amb-local) lista-params-args
+                          (empty? lista-params-args) amb-local
+                          :else (apply concat (apply assoc (apply assoc {} amb-local) lista-params-args)))]
+    (evaluar (first (nnext fnc)) amb-global nuevo-amb-local)))
 
 (defn aplicar-lambda-multiple
   "Evalua una forma lambda 'fnc' cuyo cuerpo contiene varias expresiones."
@@ -460,19 +464,19 @@
 ; false
 ; user=> (igual? 'a "A")
 ; false
-(defn lowercase_si [a]
+(defn lower-case-aux [a]
     "Función auxiliar que retorna null si el elemento es 'NIL o (), al elemento convertido
     a lowercase si es un símbolo o lista o, en caso contrario, al elemento tal como se lo recibió."
     (cond
-        (or (= 'NIL a) (= () a)) nil
-        (or (symbol? a) (list? a)) (lower-case a)
+        (or (= 'NIL a) (= () a) (= nil a)) nil
+        (or (symbol? a) (seq? a)) (lower-case a)
         :else a
     )
 )
 
 (defn igual? [simbolo-a simbolo-b]
     "Verifica la igualdad entre dos elementos al estilo de TLC-LISP (case-insensitive)."
-    (= (lowercase_si simbolo-a) (lowercase_si simbolo-b))
+    (= (lower-case-aux simbolo-a) (lower-case-aux simbolo-b))
 )
 
 
@@ -497,9 +501,7 @@
 (defn error? [listado_error]
     "Devuelve true o false, segun sea o no el arg. un mensaje de error (una lista con *error* como primer elemento)."
     (cond
-        (not (list? listado_error)) false
-        (or (or (= listado_error nil) (= listado_error ())) (= (count listado_error) 0)) false
-        (igual? (str "*error*") (first listado_error)) true
+        (and (seq? listado_error) (igual? (str "*error*") (first listado_error))) true
         :else false
     )
 )
@@ -537,7 +539,7 @@
 (defn revisar-lae [lista]
     "Devuelve el primer elemento que es un mensaje de error. Si no hay ninguno, devuelve nil."
     (cond
-        (or (= lista nil) (= lista ())) nil
+        (igual? lista nil) nil
         :else (first (filter error? lista))
     )
 )
@@ -561,8 +563,8 @@
      Si el valor es un error, el ambiente no se modifica. De lo contrario, se le carga o reemplaza el valor."
     (let [indice (.indexOf ambiente (symbol (lower-case clave)))]
         (cond
-            (and (= indice -1) (= (count ambiente) 0)) (list clave nuevo_valor)
-            (= indice -1) (concat ambiente (list (symbol (lower-case clave)) nuevo_valor))
+            (and (igual? indice -1) (igual? (count ambiente) 0)) (list (symbol (lower-case clave)) nuevo_valor)
+            (igual? indice -1) (concat ambiente (list (symbol (lower-case clave)) nuevo_valor))
             (error? nuevo_valor) ambiente
             :else (reemplazar-en-indice ambiente (inc (.indexOf ambiente (symbol (lower-case clave)))) nuevo_valor)
         )
@@ -577,10 +579,10 @@
 (defn buscar [clave ambiente]
     "Busca una clave en un ambiente (una lista con claves en las posiciones impares [1, 3, 5...] y valores en las pares [2, 4, 6...]
      y devuelve el valor asociado. Devuelve un mensaje de error si no la encuentra."
-    (let [indice (.indexOf ambiente (symbol (lower-case clave)))]
+    (let [claves (take-nth 2 ambiente) valores (take-nth 2 (rest ambiente)) indice (.indexOf claves (symbol (lower-case clave)))]
         (cond
-            (= indice -1) (list '*error* 'unbound-symbol clave)
-            :else (nth ambiente (inc indice))
+            (igual? indice -1) (list '*error* 'unbound-symbol clave)
+            :else (nth valores indice)
         )
     )
 )
@@ -603,15 +605,6 @@
 ; nil
 ; user=> (fnc-append '(() ()))
 ; nil
-
-(defn empty-or-nil? [elemento]
-    "Devuelve true si el elemento es una lista vacía o nil."
-    (cond
-        (or (= elemento nil) (= elemento ())) true
-        :else false
-    )
-)
-
 (defn append-not-seq? [lista]
     "Devuelve true sólo si el primer elemento es una secuencia no vacía y el segundo elemento no es una secuencia ni es nil."
     (cond
@@ -624,7 +617,7 @@
     "Devuelve el resultado de fusionar 2 sublistas."
     (cond
         (seq? (controlar-aridad lista 2)) (controlar-aridad lista 2)
-        (and (empty-or-nil? (first lista)) (empty-or-nil? (second lista))) nil
+        (and (igual? (first lista) nil) (igual? (second lista) nil)) nil
         (or (append-not-seq? lista) (append-not-seq? (reverse lista))) (list '*error* 'list 'expected (second lista))
         :else (concat (first lista) (second lista))
     )
@@ -707,7 +700,7 @@
     (let [stream (read)]
         (cond
             (error? (controlar-aridad elemento 0)) (list '*error* 'not-implemented)
-            (or (= stream ()) (= stream nil)) nil
+            (igual? stream nil) nil
             :else stream
         )
     )
@@ -777,7 +770,7 @@
     (cond
         (< (count lista) 1) (list '*error* 'too-few-args)
         (not-every? number? lista) (list '*error* 'number-expected (first (filter (complement number?) lista)))
-        (= (count lista) 1) (- (first lista))
+        (igual? (count lista) 1) (- (first lista))
         :else (reduce - lista)
     )
 )
@@ -908,11 +901,11 @@
 ; (5 (v 1 w 3 x 6))
 ; user=> (evaluar-escalar 'n '(v 1 w 3 x 6) '(x 5 y 11 z "hola"))
 ; ((*error* unbound-symbol n) (v 1 w 3 x 6))
-(defn evaluar-escalar [escalar amb-local amb-global]
+(defn evaluar-escalar [escalar amb-global amb-local]
     "Evalua una expresion escalar consultando, si corresponde, los ambientes local y global. Devuelve una lista con el resultado y un ambiente."
     (cond
-        (not (symbol? escalar)) (list escalar amb-local)
-        :else (list (buscar escalar (fnc-append (list amb-global amb-local))) amb-local)
+        (not (symbol? escalar)) (list escalar amb-global)
+        :else (list (buscar escalar (fnc-append (list amb-local amb-global))) amb-global)
     )
 )
 
@@ -943,15 +936,33 @@
 ; ((*error* symbol expected 2) (x 1))
 ; user=> (evaluar-de '(de nil (x) 2) '(x 1))
 ; ((*error* cannot-set nil) (x 1))
-(defn evaluar-de [funcion args]
-    "Evalua una forma 'de'. Devuelve una lista con el resultado y un ambiente actualizado con la definicion."
+(defn nested-map [f secuencia]
+    "Retorna la secuencia resultante de aplicar f a cada nivel de la secuencia recibida."
     (cond
-        (< (count funcion) 3) (list (list '*error* 'list 'expected nil) args)
-        (= nil (second funcion)) (list (list '*error* 'cannot-set nil) args)
-        (symbol? (nth funcion 2)) (list (list '*error* 'list 'expected (nth funcion 2)) args)
-        (not (symbol? (second funcion))) (list (list '*error* 'symbol 'expected (second funcion)) args)
-        (not (list? (nth funcion 2))) (list (list '*error* 'list 'expected (nth funcion 2)) args)
-        :else (list (second funcion) (list (first args) (second args) (second funcion) (concat '(lambda) (drop 2 funcion))))
+        (empty? secuencia) nil
+        (seq? (first secuencia)) (cons (nested-map f (first secuencia)) (nested-map f (rest secuencia)))
+        :else (cons (f (first secuencia)) (nested-map f (rest secuencia)))
+    )
+)
+
+(defn lower-case-symbol [elemento]
+    "Retorna el elemento convertido a lowercase como symbol si era originalmente symbol.
+     En caso contrario, retorna el elemento tal y como fue recibido."
+    (cond
+        (igual? elemento nil) nil
+        (symbol? elemento) (symbol (lower-case elemento))
+        :else elemento
+    )
+)
+
+(defn evaluar-de [funcion ambiente]
+    (let [funcion (nested-map lower-case-symbol funcion) ambiente (nested-map lower-case-symbol ambiente)]
+        (cond
+            (not (seq? (second (rest funcion)))) (list (list '*error* 'list 'expected (second (rest funcion))) ambiente)
+            (igual? nil (second funcion)) (list (list '*error* 'cannot-set (second funcion)) ambiente)
+            (not (symbol? (second funcion))) (list (list '*error* 'symbol 'expected (second funcion)) ambiente)
+            :else (list (second funcion) (actualizar-amb ambiente (second funcion) (concat '(lambda) (rest (rest funcion)))))
+        )
     )
 )
 
@@ -992,15 +1003,13 @@
 ; (8 (gt gt nil nil t t v 1 w 3 x 6 m 8))
 (defn evaluar-if [forma amb-global amb-local]
     "Evalua una forma 'if'. Devuelve una lista con el resultado y un ambiente eventualmente modificado."
-    (let [longitud-forma (count forma)]
-        (let [resultado (evaluar (second forma) amb-global amb-local)]
-            (cond
-                (and (igual? longitud-forma 2)) (evaluar nil amb-global amb-local) ; si longitud de forma-if es 2
-                (and (igual? longitud-forma 3) (nil? (second forma))) (evaluar nil amb-global amb-local) ; si longitud es 3 y el segundo elemento es nil
-                (error? (first resultado)) resultado ; si la expresion es nil, () o error, evaluar la devuelve intacta junto con el ambiente global (igual que lo que pide esta función)
-                (first resultado) (evaluar (nth forma 2) amb-global amb-local) ; en caso contrario, evaluar expresión siguiente
-                :else (evaluar (last forma) amb-global amb-local) ; por default retornar resultado de evaluar última expresión
-            )
+    (let [resultado (evaluar (second forma) amb-global amb-local) longitud-forma (count forma)]
+        (cond
+            (error? (first resultado)) resultado ; si la expresion es nil, () o error, evaluar la devuelve intacta junto con el ambiente global (igual que lo que pide esta función)
+            (and (igual? longitud-forma 2)) (evaluar nil amb-global amb-local) ; si longitud de forma-if es 2
+            (and (igual? longitud-forma 3) (igual? (second forma) nil)) (evaluar nil amb-global amb-local) ; si longitud es 3 y el segundo elemento es nil, ya es nil
+            (first resultado) (evaluar (nth forma 2) amb-global amb-local) ; en caso contrario, evaluar expresión siguiente
+            :else (evaluar (last forma) amb-global amb-local) ; por default retornar resultado de evaluar última expresión
         )
     )
 )
@@ -1032,51 +1041,77 @@
 ; (t (nil nil t t w 5 x 4))
 ; user=> (evaluar-or '(or nil nil nil nil) '(nil nil t t w 5 x 4) '(x 1 y nil z 3))
 ; (nil (nil nil t t w 5 x 4))
+
+(defn ejecutar-evaluacion-or [forma amb-global amb-local]
+    (let [resultado (evaluar (first forma) amb-global amb-local)]
+        (cond
+            (not (igual? (first resultado) nil)) resultado ; encontró un true, como es OR ya puede cortar
+            :else (evaluar-or forma (second resultado) amb-local) ; si no, llamar recursivamente
+        )
+    )
+)
+
 (defn evaluar-or [forma amb-global amb-local]
     "Evalua una forma 'or'. Devuelve una lista con el resultado y un ambiente."
     (let [tail (drop 1 forma)]
-        (if (or (nil? tail) (empty? tail)) (list nil amb-global)
-            (let [resultado (evaluar (second forma) amb-global amb-local)]
-                (cond
-                    (or (error? (first resultado)) (igual? (drop 2 forma) nil)) resultado ; si primera evaluación devuelve error o siguiente elemento es nil, retornar resultado
-                    (igual? (first resultado) nil) (evaluar (list 'or (first (drop 2 forma))) (second resultado) amb-local) ; si no hubo error pero resultado nil, evaluar siguiente expresión
-                    ; completar
-                )
-            )
+        (cond
+            (empty? tail) (list nil amb-global) ; llegué al final y está vacío porque eran todos nil
+            :else (ejecutar-evaluacion-or tail amb-global amb-local)
         )
     )
 )
 
 
-; ; user=> (evaluar-setq '(setq) '(nil nil t t + add w 5 x 4) '(x 1 y nil z 3))
-; ; ((*error* list expected nil) (nil nil t t + add w 5 x 4))
-; ; user=> (evaluar-setq '(setq m) '(nil nil t t + add w 5 x 4) '(x 1 y nil z 3))
-; ; ((*error* list expected nil) (nil nil t t + add w 5 x 4))
-; ; user=> (evaluar-setq '(setq m 7) '(nil nil t t + add w 5 x 4) '(x 1 y nil z 3))
-; ; (7 (nil nil t t + add w 5 x 4 m 7))
-; ; user=> (evaluar-setq '(setq x 7) '(nil nil t t + add w 5 x 4) '(x 1 y nil z 3))
-; ; (7 (nil nil t t + add w 5 x 7))
-; ; user=> (evaluar-setq '(setq x (+ x 1)) '(nil nil t t + add w 5 x 4) '(x 1 y nil z 3))
-; ; (2 (nil nil t t + add w 5 x 2))
-; ; user=> (evaluar-setq '(setq x (+ x 1)) '(nil nil t t + add w 5 x 4) '(y nil z 3))
-; ; (5 (nil nil t t + add w 5 x 5))
-; ; user=> (evaluar-setq '(setq nil) '(nil nil t t + add w 5 x 4) '(x 1 y nil z 3))
-; ; ((*error* list expected nil) (nil nil t t + add w 5 x 4))
-; ; user=> (evaluar-setq '(setq nil 7) '(nil nil t t + add w 5 x 4) '(x 1 y nil z 3))
-; ; ((*error* cannot-set nil) (nil nil t t + add w 5 x 4))
-; ; user=> (evaluar-setq '(setq 7 8) '(nil nil t t + add w 5 x 4) '(x 1 y nil z 3))
-; ; ((*error* symbol expected 7) (nil nil t t + add w 5 x 4))
-; ; user=> (evaluar-setq '(setq x 7 m (+ x 7)) '(nil nil t t + add w 5 x 4) '(x 1 y nil z 3))
-; ; (8 (nil nil t t + add w 5 x 7 m 8))
-; ; user=> (evaluar-setq '(setq x 7 m (+ x 7)) '(nil nil t t + add w 5 x 4) '(y nil z 3))
-; ; (14 (nil nil t t + add w 5 x 7 m 14))
-; ; user=> (evaluar-setq '(setq x 7 y) '(nil nil t t + add w 5 x 4) '(y nil z 3))
-; ; ((*error* list expected nil) (nil nil t t + add w 5 x 7))
-; ; user=> (evaluar-setq '(setq x 7 y 8 z 9) '(nil nil t t + add w 5 x 4) '(y nil z 3))
-; ; (9 (nil nil t t + add w 5 x 7 y 8 z 9))
-; (defn evaluar-setq
-;   "Evalua una forma 'setq'. Devuelve una lista con el resultado y un ambiente actualizado."
-; )
+; user=> (evaluar-setq '(setq) '(nil nil t t + add w 5 x 4) '(x 1 y nil z 3))
+; ((*error* list expected nil) (nil nil t t + add w 5 x 4))
+; user=> (evaluar-setq '(setq m) '(nil nil t t + add w 5 x 4) '(x 1 y nil z 3))
+; ((*error* list expected nil) (nil nil t t + add w 5 x 4))
+; user=> (evaluar-setq '(setq m 7) '(nil nil t t + add w 5 x 4) '(x 1 y nil z 3))
+; (7 (nil nil t t + add w 5 x 4 m 7))
+; user=> (evaluar-setq '(setq x 7) '(nil nil t t + add w 5 x 4) '(x 1 y nil z 3))
+; (7 (nil nil t t + add w 5 x 7))
+; user=> (evaluar-setq '(setq x (+ x 1)) '(nil nil t t + add w 5 x 4) '(x 1 y nil z 3))
+; (2 (nil nil t t + add w 5 x 2))
+; user=> (evaluar-setq '(setq x (+ x 1)) '(nil nil t t + add w 5 x 4) '(y nil z 3))
+; (5 (nil nil t t + add w 5 x 5))
+; user=> (evaluar-setq '(setq nil) '(nil nil t t + add w 5 x 4) '(x 1 y nil z 3))
+; ((*error* list expected nil) (nil nil t t + add w 5 x 4))
+; user=> (evaluar-setq '(setq nil 7) '(nil nil t t + add w 5 x 4) '(x 1 y nil z 3))
+; ((*error* cannot-set nil) (nil nil t t + add w 5 x 4))
+; user=> (evaluar-setq '(setq 7 8) '(nil nil t t + add w 5 x 4) '(x 1 y nil z 3))
+; ((*error* symbol expected 7) (nil nil t t + add w 5 x 4))
+; user=> (evaluar-setq '(setq x 7 m (+ x 7)) '(nil nil t t + add w 5 x 4) '(x 1 y nil z 3))
+; (8 (nil nil t t + add w 5 x 7 m 8))
+; user=> (evaluar-setq '(setq x 7 m (+ x 7)) '(nil nil t t + add w 5 x 4) '(y nil z 3))
+; (14 (nil nil t t + add w 5 x 7 m 14))
+; user=> (evaluar-setq '(setq x 7 y) '(nil nil t t + add w 5 x 4) '(y nil z 3))
+; ((*error* list expected nil) (nil nil t t + add w 5 x 7))
+; user=> (evaluar-setq '(setq x 7 y 8 z 9) '(nil nil t t + add w 5 x 4) '(y nil z 3))
+; (9 (nil nil t t + add w 5 x 7 y 8 z 9))
+(defn ejecutar-evaluacion-setq[forma amb-global amb-local]
+    "Ejecuta la evaluación de una forma 'setq' devolviendo el resultado de una evaluación o
+     realizando un llamado recursivo según corresponda.
+     Pre-condiciones: los parámetros recibidos son válidos (por lo que no se requieren chequeos)."
+    (let [resultado (first (evaluar (first (drop 2 forma)) amb-global amb-local)) amb-global-actual (actualizar-amb amb-global (second forma) resultado)]
+        (cond
+            (igual? (count (drop 1 forma)) 2) (list resultado amb-global-actual)
+            :else (evaluar-setq (drop 2 forma) amb-global-actual amb-local)
+        )
+    )
+)
+
+(defn evaluar-setq [forma amb-global amb-local]
+    "Evalua una forma 'setq'. Devuelve una lista con el resultado y un ambiente actualizado."
+    (let [primer-elem (second forma)]
+        (cond
+            (< (count (drop 1 forma)) 2) (list (list '*error* 'list 'expected nil) amb-global)
+            (igual? primer-elem nil) (list (list '*error* 'cannot-set nil) amb-global)
+            (not (symbol? primer-elem)) (list (list '*error* 'symbol 'expected primer-elem) amb-global)
+            :else (ejecutar-evaluacion-setq forma amb-global amb-local)
+        )
+    )
+)
+
 
 
 ; Al terminar de cargar el archivo en el REPL de Clojure (con load-file), se debe devolver true.
@@ -1086,4 +1121,5 @@
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
-  (println "Hello, World!"))
+  (repl)
+)
